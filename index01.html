@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>여행 계획 대시보드</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+
+    /* 모바일 프레임 */
+    .app-container {
+      width: 395px;
+      height: 800px;
+      background: #ffffff;
+      border-radius: 36px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+      border: 8px solid #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 헤더 */
+    .app-header {
+      padding: 20px 20px 8px 20px;
+    }
+    .badge-travel {
+      background-color: #2563eb;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .header-subtext {
+      padding: 0 20px 14px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    /* 메인 영역 (일정 박스 밑에는 아무것도 없음) */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px;
+    }
+    .app-content::-webkit-scrollbar { display: none; }
+
+    /* 메인 사진 카드 */
+    .main-card {
+      width: 100%;
+      height: 220px;
+      background-color: #e5e7eb;
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 16px;
+    }
+    .main-card.has-img::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+      border-radius: 20px;
+    }
+    .card-info {
+      position: relative;
+      z-index: 1;
+      color: #333;
+    }
+    .main-card.has-img .card-info { color: #fff; }
+    .card-location { font-size: 22px; font-weight: 800; }
+    .card-date { font-size: 12px; margin-top: 4px; opacity: 0.9; }
+
+    /* 여행 정보 입력 버튼 */
+    .info-btn-box {
+      margin-top: 12px;
+      background-color: #4b5563;
+      color: white;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* DAY 1 일정 박스 (최하단 요소) */
+    .day-section {
+      margin-top: 16px;
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 80px; /* 하단 탭과 여백 */
+    }
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .day-title { font-size: 14px; font-weight: 800; color: #2563eb; }
+    .more-btn { font-size: 11px; color: #6b7280; cursor: pointer; }
+    .schedule-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+    .schedule-item:last-child { border-bottom: none; }
+    .schedule-time-text { color: #111827; font-weight: 600; }
+    .schedule-note { color: #6b7280; }
+
+    /* 하단 네비게이션 바 */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 8px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+    .nav-icon { font-size: 16px; }
+
+    /* --- 독자적 팝업 모달 --- */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 100;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      width: 100%;
+      height: 92%;
+      background: #ffffff;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.25s ease-out forwards;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .btn-close-x {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      background-color: #f3f4f6;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      color: #4b5563;
+      cursor: pointer;
+    }
+    .modal-title-text { font-size: 16px; font-weight: 800; color: #111827; }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* 입력 폼 공통 */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-input {
+      width: 100%;
+      height: 48px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 14px;
+      color: #111827;
+      outline: none;
+    }
+    .form-input:focus { border-color: #2563eb; background-color: #fff; }
+
+    /* 공통 버튼 */
+    .btn-submit {
+      width: 100%;
+      height: 50px;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-add-outline {
+      width: 100%;
+      height: 46px;
+      background: #ffffff;
+      border: 2px dashed #2563eb;
+      color: #2563eb;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: auto;
+    }
+    .btn-del {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* 카드 스타일 (항공, 숙소, 티켓, 북마크) */
+    .item-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .item-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-card-title { font-size: 15px; font-weight: 800; color: #111827; }
+    .item-card-sub { font-size: 12px; color: #6b7280; }
+    .flight-time-box {
+      display: flex;
+      justify-content: space-between;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    /* 북마크 구글맵 프레임 */
+    .bm-map-frame {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* 경비 요약 박스 */
+    .expense-calc-box {
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #4b5563;
+      margin-bottom: 8px;
+    }
+    .calc-row.total {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+    }
+    .calc-row.remaining { color: #10b981; font-weight: 700; }
+
+    /* 티켓 업로드 미리보기 */
+    .ticket-upload-box {
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      background: #f9fafb;
+      cursor: pointer;
+      font-size: 13px;
+      color: #4b5563;
+    }
+    .preview-img {
+      width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: 8px;
+      display: none;
+      margin-top: 8px;
+      border: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="app-header">
+      <span class="badge-travel">TRAVEL</span>
+    </div>
+    <div class="header-subtext">준비중이신 여행 계획을 정리해 드릴게요!</div>
+
+    <!-- 메인화면 영역 -->
+    <div class="app-content">
+      <!-- 대표 카드 -->
+      <div class="main-card" id="mainCard">
+        <div class="card-info">
+          <div class="card-location" id="displayLocation">여행지를 입력해주세요</div>
+          <div class="card-date" id="displayDate">날짜 정보 없음</div>
+        </div>
+      </div>
+
+      <!-- 정보 입력 버튼 -->
+      <div class="info-btn-box" onclick="openModal('modal-trip')">
+        <span>여행 상세 정보 입력하기</span>
+        <span>&gt;</span>
+      </div>
+
+      <!-- DAY 1 일정 박스 (최하단 노출) -->
+      <div class="day-section">
+        <div class="day-header">
+          <span class="day-title">DAY 1 일정</span>
+          <span class="more-btn">일정 더보기</span>
+        </div>
+        <div>
+          <div class="schedule-item">
+            <span class="schedule-time-text">12:00 후쿠오카 공항 도착</span>
+            <span class="schedule-note">교통비 260엔</span>
+          </div>
+          <div class="schedule-item">
+            <span class="schedule-time-text">14:00 신신라멘 점심 식사</span>
+            <span class="schedule-note">약 1,200엔</span>
+          </div>
+          <div class="schedule-item">
+            <span class="schedule-time-text">16:00 숙소 체크인</span>
+            <span class="schedule-note">하카타역 근처</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 탭 바 -->
+    <div class="bottom-nav">
+      <button class="nav-item" onclick="openModal('modal-flight')">
+        <span class="nav-icon">✈️</span>
+        <span>항공편</span>
+      </button>
+      <button class="nav-item" onclick="openModal('modal-hotel')">
+        <span class="nav-icon">🏨</span>
+        <span>숙소</span>
+      </button>
+      <button class="nav-item" onclick="openModal('modal-expense')">
+        <span class="nav-icon">💰</span>
+        <span>경비</span>
+      </button>
+      <button class="nav-item" onclick="openModal('modal-ticket')">
+        <span class="nav-icon">🎟️</span>
+        <span>티켓</span>
+      </button>
+      <button class="nav-item" onclick="openModal('modal-bookmark')">
+        <span class="nav-icon">🔖</span>
+        <span>북마크</span>
+      </button>
+    </div>
+
+    <!-- ==================== 모달 영역 ==================== -->
+
+    <!-- 0. 여행 기본 정보 입력 모달 -->
+    <div class="modal-overlay" id="modal-trip">
+      <div class="modal-box">
+        <div class="modal-header">
+          <button class="btn-close-x" onclick="closeModal('modal-trip')">✕</button>
+          <span class="modal-title-text">여행 기본 정보</span>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">여행지</label>
+            <input type="text" id="tripLoc" class="form-input" placeholder="예: Fukuoka">
+          </div>
+          <div class="form-group">
+            <label class="form-label">여행 기간</label>
+            <input type="text" id="tripDate" class="form-input" placeholder="예: 2026.10.12 - 10.15">
+          </div>
+          <button class="btn-submit" onclick="saveTripInfo()">저장하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. 항공편 모달 -->
+    <div class="modal-overlay" id="modal-flight">
+      <div class="modal-box">
+        <div class="modal-header">
+          <button class="btn-close-x" onclick="closeModal('modal-flight')">✕</button>
+          <span class="modal-title-text">항공편 정보</span>
+        </div>
+        <div class="modal-body" id="flightBody">
+          <!-- 저장된 항공권 목록 / 없으면 입력 폼 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 숙소 모달 -->
+    <div class="modal-overlay" id="modal-hotel">
+      <div class="modal-box">
+        <div class="modal-header">
+          <button class="btn-close-x" onclick="closeModal('modal-hotel')">✕</button>
+          <span class="modal-title-text">숙소 정보</span>
+        </div>
+        <div class="modal-body" id="hotelBody">
+          <!-- 숙소 목록 / 입력 폼 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 경비 모달 (가독성 천단위 쉼표 적용) -->
+    <div class="modal-overlay" id="modal-expense">
+      <div class="modal-box">
+        <div class="modal-header">
+          <button class="btn-close-x" onclick="closeModal('modal-expense')">✕</button>
+          <span class="modal-title-text">경비 및 예산 설정</span>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">목표 전체 예산 (원)</label>
+            <input type="text" id="expTotal" class="form-input" value="1,260,000" oninput="formatAndCalc(this)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">항공권 비용 (원)</label>
+            <input type="text" id="expFlight" class="form-input" value="400,000" oninput="formatAndCalc(this)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">숙소 비용 (원)</label>
+            <input type="text" id="expHotel" class="form-input" value="260,000" oninput="formatAndCalc(this)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">현지 체류 경비 (원)</label>
+            <input type="text" id="expStay" class="form-input" value="600,000" oninput="formatAndCalc(this)">
+          </div>
+
+          <div class="expense-calc-box">
+            <div class="calc-row total">
+              <span>총 예상 지출:</span>
+              <span id="txtExpTotal">1,260,000원</span>
+            </div>
+            <div class="calc-row remaining">
+              <span>잔액:</span>
+              <span id="txtExpRemain">0원</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 티켓 및 바우처 모달 (상단 목록 + 최하단 추가 버튼) -->
+    <div class="modal-overlay" id="modal-ticket">
+      <div class="modal-box">
+        <div class="modal-header">
+          <button class="btn-close-x" onclick="closeModal('modal-ticket')">✕</button>
+          <span class="modal-title-text">티켓 및 바우처</span>
+        </div>
+        <div class="modal-body" id="ticketBody">
+          <!-- 티켓 목록 우선 노출 / 하단 추가 버튼 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 북마크 모달 (상단 목록 + 클릭시 구글맵 연동 + 최하단 추가 버튼) -->
+    <div class="modal-overlay" id="modal-bookmark">
+      <div class="modal-box">
+        <div class="modal-header">
+          <button class="btn-close-x" onclick="closeModal('modal-bookmark')">✕</button>
+          <span class="modal-title-text">북마크 장소</span>
+        </div>
+        <div class="modal-body" id="bookmarkBody">
+          <!-- 북마크 목록 / 클릭시 인라인 맵 / 하단 추가 버튼 -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 상태 데이터 관리
+    let flights = [];
+    let hotels = [];
+    let tickets = [];
+    let bookmarks = [];
+
+    // 모달 제어
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      if (id === 'modal-flight') renderFlightView();
+      if (id === 'modal-hotel') renderHotelView();
+      if (id === 'modal-ticket') renderTicketView();
+      if (id === 'modal-bookmark') renderBookmarkView();
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    // 기본 여행 정보 저장
+    function saveTripInfo() {
+      const loc = document.getElementById('tripLoc').value || 'Fukuoka';
+      const date = document.getElementById('tripDate').value || '날짜 미정';
+      document.getElementById('displayLocation').innerText = loc;
+      document.getElementById('displayDate').innerText = date;
+      const card = document.getElementById('mainCard');
+      card.style.backgroundImage = `url('https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80')`;
+      card.classList.add('has-img');
+      closeModal('modal-trip');
+    }
+
+    /* --- 1. 항공편 탭 렌더링 & 저장 --- */
+    function renderFlightView(showForm = false) {
+      const body = document.getElementById('flightBody');
+      if (flights.length === 0 || showForm) {
+        body.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">항공사 / 항공편명</label>
+            <input type="text" id="flCode" class="form-input" placeholder="예: 대한항공 KE789">
+          </div>
+          <div class="form-group">
+            <label class="form-label">출발 시간</label>
+            <input type="text" id="flDepart" class="form-input" placeholder="예: 10/12 09:00 (ICN)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">도착 시간</label>
+            <input type="text" id="flArrive" class="form-input" placeholder="예: 10/12 10:30 (FUK)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">금액</label>
+            <input type="text" id="flPrice" class="form-input" placeholder="400,000원" oninput="formatCurrency(this)">
+          </div>
+          <button class="btn-submit" onclick="saveFlight()">저장하기</button>
+        `;
+      } else {
+        let listHtml = flights.map((item, index) => `
+          <div class="item-card">
+            <div class="item-card-header">
+              <span class="item-card-title">✈️ ${item.code}</span>
+              <button class="btn-del" onclick="delFlight(${index})">삭제</button>
+            </div>
+            <div class="flight-time-box">
+              <div><b>출발:</b> ${item.depart}</div>
+              <div><b>도착:</b> ${item.arrive}</div>
+            </div>
+            <div style="font-size:13px; font-weight:700; color:#2563eb; text-align:right;">${item.price}</div>
+          </div>
+        `).join('');
+        body.innerHTML = listHtml + `<button class="btn-add-outline" onclick="renderFlightView(true)">+ 항공권 추가하기</button>`;
+      }
+    }
+    function saveFlight() {
+      const code = document.getElementById('flCode').value;
+      const depart = document.getElementById('flDepart').value;
+      const arrive = document.getElementById('flArrive').value;
+      const price = document.getElementById('flPrice').value;
+      if (!code) return alert('항공편명을 입력해 주세요.');
+      flights.push({ code, depart, arrive, price });
+      renderFlightView();
+    }
+    function delFlight(idx) {
+      flights.splice(idx, 1);
+      renderFlightView();
+    }
+
+    /* --- 2. 숙소 탭 렌더링 & 저장 --- */
+    function renderHotelView(showForm = false) {
+      const body = document.getElementById('hotelBody');
+      if (hotels.length === 0 || showForm) {
+        body.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">숙소 이름</label>
+            <input type="text" id="htName" class="form-input" placeholder="예: 하카타 오리엔탈 호텔">
+          </div>
+          <div class="form-group">
+            <label class="form-label">숙박 일정</label>
+            <input type="text" id="htStay" class="form-input" placeholder="예: 10/12 ~ 10/15 (3박)">
+          </div>
+          <button class="btn-submit" onclick="saveHotel()">저장하기</button>
+        `;
+      } else {
+        let listHtml = hotels.map((item, index) => `
+          <div class="item-card">
+            <div class="item-card-header">
+              <span class="item-card-title">🏨 ${item.name}</span>
+              <button class="btn-del" onclick="delHotel(${index})">삭제</button>
+            </div>
+            <div class="item-card-sub">일정: ${item.stay}</div>
+          </div>
+        `).join('');
+        body.innerHTML = listHtml + `<button class="btn-add-outline" onclick="renderHotelView(true)">+ 숙소 추가</button>`;
+      }
+    }
+    function saveHotel() {
+      const name = document.getElementById('htName').value;
+      const stay = document.getElementById('htStay').value;
+      if (!name) return alert('숙소 이름을 입력해 주세요.');
+      hotels.push({ name, stay });
+      renderHotelView();
+    }
+    function delHotel(idx) {
+      hotels.splice(idx, 1);
+      renderHotelView();
+    }
+
+    /* --- 3. 경비 탭 (천단위 쉼표 가독성 적용) --- */
+    function formatCurrency(input) {
+      let val = input.value.replace(/[^0-9]/g, '');
+      if (val) {
+        input.value = Number(val).toLocaleString() + (input.id === 'flPrice' ? '원' : '');
+      } else {
+        input.value = '';
+      }
+    }
+    function parseNum(id) {
+      const v = document.getElementById(id).value.replace(/[^0-9]/g, '');
+      return Number(v) || 0;
+    }
+    function formatAndCalc(input) {
+      let val = input.value.replace(/[^0-9]/g, '');
+      if (val) input.value = Number(val).toLocaleString();
+      else input.value = '';
+      
+      const total = parseNum('expTotal');
+      const spent = parseNum('expFlight') + parseNum('expHotel') + parseNum('expStay');
+      const remain = total - spent;
+
+      document.getElementById('txtExpTotal').innerText = spent.toLocaleString() + '원';
+      document.getElementById('txtExpRemain').innerText = remain.toLocaleString() + '원';
+    }
+
+    /* --- 4. 티켓 및 바우처 탭 렌더링 --- */
+    let tempTicketImg = '';
+    function renderTicketView(showForm = false) {
+      const body = document.getElementById('ticketBody');
+      if (tickets.length === 0 || showForm) {
+        tempTicketImg = '';
+        body.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">티켓 이름</label>
+            <input type="text" id="tkName" class="form-input" placeholder="예: 산큐패스 / 유니버셜 입장권">
+          </div>
+          <div class="form-group">
+            <label class="form-label">예약 번호 / 메모</label>
+            <input type="text" id="tkMemo" class="form-input" placeholder="예약 확정 번호 입력">
+          </div>
+          <div class="form-group">
+            <label class="form-label">바코드 / 이미지 첨부</label>
+            <div class="ticket-upload-box" onclick="document.getElementById('fileTk').click()">
+              📸 이미지 선택하기
+            </div>
+            <input type="file" id="fileTk" accept="image/*" style="display:none;" onchange="handleTicketFile(event)">
+            <img id="tkPreview" class="preview-img" alt="미리보기">
+          </div>
+          <button class="btn-submit" onclick="saveTicket()">저장하기</button>
+        `;
+      } else {
+        let listHtml = tickets.map((item, index) => `
+          <div class="item-card">
+            <div class="item-card-header">
+              <span class="item-card-title">🎟️ ${item.name}</span>
+              <button class="btn-del" onclick="delTicket(${index})">삭제</button>
+            </div>
+            <div class="item-card-sub">${item.memo || '메모 없음'}</div>
+            ${item.img ? `<img src="${item.img}" style="width:100%; max-height:140px; object-fit:contain; border-radius:6px; margin-top:6px;">` : ''}
+          </div>
+        `).join('');
+        body.innerHTML = listHtml + `<button class="btn-add-outline" onclick="renderTicketView(true)">+ 티켓 추가하기</button>`;
+      }
+    }
+    function handleTicketFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          tempTicketImg = evt.target.result;
+          const img = document.getElementById('tkPreview');
+          img.src = tempTicketImg;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    function saveTicket() {
+      const name = document.getElementById('tkName').value;
+      const memo = document.getElementById('tkMemo').value;
+      if (!name) return alert('티켓 이름을 입력해 주세요.');
+      tickets.push({ name, memo, img: tempTicketImg });
+      renderTicketView();
+    }
+    function delTicket(idx) {
+      tickets.splice(idx, 1);
+      renderTicketView();
+    }
+
+    /* --- 5. 북마크 장소 탭 렌더링 (구글맵 연동) --- */
+    function renderBookmarkView(showForm = false) {
+      const body = document.getElementById('bookmarkBody');
+      if (bookmarks.length === 0 || showForm) {
+        body.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">북마크 장소 이름</label>
+            <input type="text" id="bmName" class="form-input" placeholder="예: 캐널시티 후쿠오카">
+          </div>
+          <button class="btn-submit" onclick="saveBookmark()">저장하기</button>
+        `;
+      } else {
+        let listHtml = bookmarks.map((item, index) => `
+          <div class="item-card" style="cursor:pointer;" onclick="showBmMap('${item.name}', ${index})">
+            <div class="item-card-header">
+              <span class="item-card-title">📍 ${item.name}</span>
+              <button class="btn-del" onclick="event.stopPropagation(); delBookmark(${index})">삭제</button>
+            </div>
+            <div class="item-card-sub">클릭 시 위치를 지도에서 바로 확인</div>
+            <iframe id="mapFrame-${index}" class="bm-map-frame" src="about:blank"></iframe>
+          </div>
+        `).join('');
+        body.innerHTML = listHtml + `<button class="btn-add-outline" onclick="renderBookmarkView(true)">+ 북마크 추가하기</button>`;
+      }
+    }
+    function saveBookmark() {
+      const name = document.getElementById('bmName').value;
+      if (!name) return alert('장소 이름을 입력해 주세요.');
+      bookmarks.push({ name });
+      renderBookmarkView();
+    }
+    function delBookmark(idx) {
+      bookmarks.splice(idx, 1);
+      renderBookmarkView();
+    }
+    function showBmMap(name, index) {
+      const frame = document.getElementById(`mapFrame-${index}`);
+      if (frame.style.display === 'block') {
+        frame.style.display = 'none';
+      } else {
+        frame.src = `https://maps.google.com/maps?q=${encodeURIComponent(name)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        frame.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

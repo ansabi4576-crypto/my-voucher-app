@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월급 및 지출 관리 대시보드</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #2a2d3e 0%, #111319 100%);
+      background-attachment: fixed;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      padding: 16px;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .glass-input {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: #ffffff;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+    }
+
+    .glass-input:focus {
+      border-color: rgba(112, 186, 255, 0.6);
+      box-shadow: 0 0 12px rgba(112, 186, 255, 0.3);
+      outline: none;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      max-width: 1300px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .dashboard-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    .calendar-card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+
+    .cal-title {
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.3px;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .cal-nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .cal-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(112, 186, 255, 0.5);
+      color: #70baff;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      width: 100%;
+    }
+
+    .cal-day {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 8px 6px;
+      min-height: 60px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .cal-day:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .cal-day.cal-today {
+      border: 1px solid rgba(112, 186, 255, 0.8);
+      box-shadow: 0 0 10px rgba(112, 186, 255, 0.2);
+    }
+
+    .cal-day.cal-day-empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+
+    .cal-day-num {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.2;
+      display: block;
+    }
+
+    .holiday-name {
+      font-size: 10px;
+      color: #ff6b6b;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cal-dots-holder {
+      margin-top: auto;
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      padding-top: 4px;
+    }
+
+    .cal-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .green-dot { background-color: #4caf50; box-shadow: 0 0 8px #4caf50; }
+    .blue-dot { background-color: #70baff; box-shadow: 0 0 8px #70baff; }
+    .orange-dot { background-color: #ff9800; box-shadow: 0 0 8px #ff9800; }
+    .purple-dot { background-color: #e040fb; box-shadow: 0 0 8px #e040fb; }
+
+    .info-card {
+      padding: 18px;
+      transition: all 0.25s ease;
+      min-width: 0;
+    }
+
+    .income-control, .slider-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .amount-input {
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      width: 110px;
+      text-align: right;
+      font-family: inherit;
+    }
+
+    .income-amount-input { color: #4caf50; }
+    .expense-amount-input { color: #ff6b6b; }
+    .fixed-amount-input { color: #ff9800; }
+    .item-amount-input { color: #e040fb; }
+
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+      align-items: start;
+    }
+
+    .item-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: 14px;
+      transition: all 0.2s ease;
+      min-width: 0;
+    }
+
+    .item-card.is-collapsed {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .card-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .toggle-btn:hover {
+      color: #70baff;
+      background: rgba(112, 186, 255, 0.15);
+    }
+
+    .expense-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .item-label-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      font-size: 13px;
+      font-family: inherit;
+      padding: 3px 0;
+      width: 100%;
+      outline: none;
+      min-width: 0;
+    }
+
+    .item-label-input:focus { border-bottom-color: rgba(112, 186, 255, 0.8); }
+
+    .item-day-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      flex-wrap: wrap;
+    }
+
+    .item-freq-select {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 11px;
+      padding: 2px 4px;
+      outline: none;
+    }
+
+    .item-freq-select option { background: #1e2029; color: #ffffff; }
+
+    .item-day-input {
+      width: 38px;
+      padding: 2px 4px;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .delete-btn:hover {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.15);
+    }
+
+    input[type="range"] {
+      flex: 1;
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .income-slider { accent-color: #4caf50; }
+    .fixed-slider { accent-color: #ff9800; }
+    .expense-slider { accent-color: #ff6b6b; }
+    .item-slider { accent-color: #e040fb; }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .add-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+    }
+
+    .add-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(112, 186, 255, 0.6);
+      color: #70baff;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-box-card {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 0;
+    }
+
+    .summary-box-card span {
+      display: block;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .summary-box-card strong {
+      display: block;
+      font-size: 16px;
+      margin-top: 4px;
+    }
+
+    .header-container {
+      max-width: 1300px;
+      margin: 0 auto 20px auto;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .month-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(112, 186, 255, 0.1);
+      border: 1px solid rgba(112, 186, 255, 0.25);
+      border-radius: 12px;
+      padding: 4px 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-select {
+      background: transparent;
+      color: #70baff;
+      border: none;
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      text-align-last: center;
+      transition: all 0.2s ease;
+    }
+
+    .header-select option {
+      background: #181b26;
+      color: #ffffff;
+    }
+
+    .main-title-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .header-subtext {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 400;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+    }
+
+    .collapsible-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .collapsed { display: none !important; }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease-in-out;
+      padding: 20px;
+    }
+
+    .modal-overlay.is-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 850px;
+      max-height: 85vh;
+      background: rgba(24, 27, 38, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s ease-in-out;
+    }
+
+    .modal-overlay.is-visible .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.8);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 107, 107, 0.2);
+      border-color: rgba(255, 107, 107, 0.5);
+      color: #ff6b6b;
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .archive-sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-right: 16px;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+
+    .archive-tab {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .archive-tab:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .archive-tab.active {
+      background: rgba(112, 186, 255, 0.15);
+      border-color: rgba(112, 186, 255, 0.4);
+      color: #70baff;
+    }
+
+    .archive-tab-delete-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .archive-tab-delete-btn:hover {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.2);
+    }
+
+    .archive-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .archive-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 8px;
+    }
+
+    .archive-item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .archive-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      font-size: 13px;
+      gap: 10px;
+    }
+
+    .archive-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .archive-item-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .archive-item-delete-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .archive-item-delete-btn:hover {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.2);
+    }
+
+    .restore-archive-btn {
+      background: rgba(112, 186, 255, 0.15);
+      border: 1px solid rgba(112, 186, 255, 0.4);
+      color: #70baff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .restore-archive-btn:hover {
+      background: rgba(112, 186, 255, 0.3);
+      box-shadow: 0 0 10px rgba(112, 186, 255, 0.3);
+    }
+
+    .toast-message {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(24, 27, 38, 0.95);
+      color: #70baff;
+      border: 1px solid rgba(112, 186, 255, 0.4);
+      padding: 12px 24px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10000;
+    }
+
+    .toast-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* 모바일 반응형 미디어쿼리 */
+    @media (max-width: 950px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 10px;
+      }
+
+      .header-container {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-title-group {
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .main-title-text {
+        font-size: 18px;
+      }
+
+      .dashboard-card, .calendar-card, .info-card {
+        padding: 14px;
+      }
+
+      .item-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calendar-grid {
+        gap: 3px;
+      }
+
+      .cal-day {
+        padding: 4px 2px;
+        min-height: 48px;
+        border-radius: 8px;
+      }
+
+      .cal-day-num {
+        font-size: 10px;
+      }
+
+      .holiday-name {
+        font-size: 8px;
+      }
+
+      .cal-dot {
+        width: 4px;
+        height: 4px;
+      }
+
+      .modal-body {
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      .archive-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-right: 0;
+        padding-bottom: 12px;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .archive-tab {
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 최상단 타이틀 헤더 -->
+  <div class="glass-panel header-container">
+    <div class="header-title-group">
+      <div class="month-badge">
+        <select id="year-select" class="header-select"></select>
+        <select id="month-select" class="header-select"></select>
+      </div>
+      <span class="main-title-text">현금 상세 흐름표</span>
+    </div>
+    <span class="header-subtext">실시간 자산 관리 리포트</span>
+  </div>
+
+  <div class="main-layout">
+
+    <div class="dashboard-card glass-panel">
+
+      <!-- 0. 요약 종합 분석 대시보드 -->
+      <div class="summary-grid">
+        <div class="summary-box-card" style="grid-column: span 2; border-color: rgba(112, 186, 255, 0.4);">
+          <span>다음 월급날까지 실사용 가능 금액 (수입 - 고정지출 - 물건구매)</span>
+          <strong id="usable-balance" style="color: #70baff; font-size: 20px;">₩0</strong>
+        </div>
+        <div class="summary-box-card">
+          <span>주당 권장 사용 금액 (4주 등분)</span>
+          <strong id="weekly-budget" style="color: #4caf50;">₩0 / 주</strong>
+        </div>
+        <div class="summary-box-card">
+          <span>주간 지출 차감 후 최종 남은 순잔액</span>
+          <strong id="final-balance" style="color: #ffffff;">₩0</strong>
+        </div>
+      </div>
+
+      <!-- 1. 월 수입 영역 -->
+      <div class="info-card glass-panel">
+        <div class="section-title">
+          <span class="dot green-dot"></span>
+          <span>월 수입 (수익)</span>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <div style="font-size: 12px; color: rgba(255,255,255,0.7);">이번 달 월급 / 실수령액</div>
+          <div class="income-control">
+            <input type="range" id="income-slider" class="income-slider" min="0" max="10000000" step="50000" value="3000000">
+            <input type="text" inputmode="numeric" id="income-input" class="amount-input income-amount-input glass-input" value="3,000,000">
+          </div>
+        </div>
+
+        <div id="extra-income-list" class="item-grid"></div>
+        <button id="add-income-btn" class="add-btn">+ 추가 수입 항목 추가</button>
+      </div>
+
+      <!-- 2. 월간 고정 지출 영역 -->
+      <div class="info-card glass-panel">
+        <div class="section-title">
+          <span class="dot orange-dot"></span>
+          <span>월간 고정 지출 (월세, 공과금, 구독료 등)</span>
+        </div>
+        <div id="fixed-expense-grid" class="item-grid"></div>
+        <button id="add-fixed-btn" class="add-btn">+ 고정 지출 항목 추가</button>
+      </div>
+
+      <!-- 3. 사고자 하는 물건 (추가 예정 지출) 영역 -->
+      <div class="info-card glass-panel">
+        <div class="section-title">
+          <span class="dot purple-dot"></span>
+          <span>사고자 하는 물건 (추가 예정 지출)</span>
+        </div>
+        <div id="target-item-grid" class="item-grid"></div>
+        <button id="add-item-btn" class="add-btn">+ 사고자 하는 물건 추가</button>
+      </div>
+
+      <!-- 4. 주간 예정 지출 (변동 생활비) 영역 -->
+      <div class="info-card glass-panel">
+        <div class="section-title">
+          <span class="dot blue-dot"></span>
+          <span>주간 예정 지출 (식비, 여가비 등)</span>
+        </div>
+        <div id="weekly-expense-grid" class="item-grid"></div>
+        <button id="add-weekly-btn" class="add-btn">+ 주간 지출 항목 추가</button>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button id="save-month-btn" class="add-btn" style="border-style: solid; border-color: rgba(76, 175, 80, 0.5); color: #4caf50;">이번 달 마감하고 저장</button>
+        <button id="view-archive-btn" class="add-btn" style="border-style: solid; border-color: rgba(112, 186, 255, 0.5); color: #70baff;">저장된 기록 보기</button>
+      </div>
+
+    </div>
+
+    <!-- 5. 일정 캘린더 영역 -->
+    <div class="calendar-card info-card glass-panel">
+      <div class="section-title" style="margin-bottom: 14px;">
+        <span class="dot blue-dot"></span>
+        <span>일정 캘린더 (10일 ~ 익월 9일)</span>
+      </div>
+
+      <div class="calendar-header">
+        <button type="button" id="cal-prev" class="cal-nav-btn">◀</button>
+        <div id="cal-title" class="cal-title"></div>
+        <button type="button" id="cal-next" class="cal-nav-btn">▶</button>
+      </div>
+
+      <div class="calendar-weekdays">
+        <div style="color:#ff6b6b;">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div style="color:#70baff;">토</div>
+      </div>
+
+      <div id="calendar-grid" class="calendar-grid"></div>
+      <div id="selected-date-panel" style="display:none;"></div>
+    </div>
+
+  </div>
+
+  <!-- 저장된 기록 보기 (모달 팝업 오버레이) -->
+  <div id="archive-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span class="dot blue-dot"></span>
+          <span>저장된 마감 기록 보기</span>
+        </div>
+        <button type="button" id="modal-close-btn" class="modal-close-btn" title="닫기">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="archive-sidebar" class="archive-sidebar"></div>
+        <div id="archive-detail" class="archive-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 커스텀 토스트 알림창 -->
+  <div id="toast-message" class="toast-message"></div>
+
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById('toast-message');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    const incomeSlider = document.getElementById('income-slider');
+    const incomeInput = document.getElementById('income-input');
+    const extraIncomeList = document.getElementById('extra-income-list');
+    const addIncomeBtn = document.getElementById('add-income-btn');
+
+    const fixedExpenseGrid = document.getElementById('fixed-expense-grid');
+    const addFixedBtn = document.getElementById('add-fixed-btn');
+
+    const targetItemGrid = document.getElementById('target-item-grid');
+    const addItemBtn = document.getElementById('add-item-btn');
+
+    const weeklyExpenseGrid = document.getElementById('weekly-expense-grid');
+    const addWeeklyBtn = document.getElementById('add-weekly-btn');
+
+    const usableBalanceEl = document.getElementById('usable-balance');
+    const weeklyBudgetEl = document.getElementById('weekly-budget');
+    const finalBalanceEl = document.getElementById('final-balance');
+
+    const saveMonthBtn = document.getElementById('save-month-btn');
+    const viewArchiveBtn = document.getElementById('view-archive-btn');
+    const archiveModal = document.getElementById('archive-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const archiveSidebar = document.getElementById('archive-sidebar');
+    const archiveDetail = document.getElementById('archive-detail');
+
+    const yearSelect = document.getElementById('year-select');
+    const monthSelect = document.getElementById('month-select');
+
+    const startYear = 2026;
+    for (let y = startYear; y <= startYear + 5; y++) {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = `${y}년`;
+      yearSelect.appendChild(opt);
+    }
+
+    for (let m = 1; m <= 12; m++) {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = `${m}월`;
+      monthSelect.appendChild(opt);
+    }
+
+    yearSelect.value = 2026;
+    monthSelect.value = 9;
+
+    function toNumber(str) {
+      const digits = String(str).replace(/[^0-9]/g, '');
+      return digits ? parseInt(digits, 10) : 0;
+    }
+
+    function toFormatted(num) {
+      return Number(num || 0).toLocaleString();
+    }
+
+    function formatCurrency(val) {
+      return '₩' + toFormatted(val);
+    }
+
+    function applyFormattedInput(input) {
+      const cursorFromEnd = input.value.length - (input.selectionStart || 0);
+      const raw = toNumber(input.value);
+      const formatted = raw ? toFormatted(raw) : '';
+      input.value = formatted;
+      const newPos = Math.max(0, formatted.length - cursorFromEnd);
+      if (input.setSelectionRange) {
+        input.setSelectionRange(newPos, newPos);
+      }
+      return raw;
+    }
+
+    function updateSummary() {
+      const baseIncome = toNumber(incomeInput.value);
+      let extraIncomeTotal = 0;
+      extraIncomeList.querySelectorAll('.amount-input').forEach(i => extraIncomeTotal += toNumber(i.value));
+      const totalIncome = baseIncome + extraIncomeTotal;
+
+      let totalFixed = 0;
+      fixedExpenseGrid.querySelectorAll('.amount-input').forEach(i => totalFixed += toNumber(i.value));
+
+      let totalTargetItem = 0;
+      targetItemGrid.querySelectorAll('.amount-input').forEach(i => totalTargetItem += toNumber(i.value));
+
+      let totalWeekly = 0;
+      weeklyExpenseGrid.querySelectorAll('.amount-input').forEach(i => totalWeekly += toNumber(i.value));
+
+      const usableBalance = totalIncome - totalFixed - totalTargetItem;
+      const weeklyBudget = Math.floor(usableBalance / 4);
+      const finalBalance = usableBalance - totalWeekly;
+
+      usableBalanceEl.textContent = formatCurrency(usableBalance);
+      weeklyBudgetEl.textContent = formatCurrency(weeklyBudget) + ' / 주';
+      finalBalanceEl.textContent = formatCurrency(finalBalance);
+
+      if (typeof renderCalendar === 'function') {
+        renderCalendar();
+      }
+    }
+
+    function createGenericCard({ container, label = '', amount = 0, max = 2000000, inputClass = 'expense-amount-input', sliderClass = 'expense-slider', placeholder = '항목명', showDay = true, freq = 'monthly', day = 10 }) {
+      const card = document.createElement('div');
+      card.className = 'item-card info-card glass-panel';
+
+      card.innerHTML = `
+        <div class="expense-card-header">
+          <input type="text" class="item-label-input" placeholder="${placeholder}" value="${label}">
+          <div class="card-header-actions">
+            <button type="button" class="toggle-btn" title="접기/펼치기">▲</button>
+            <button type="button" class="delete-btn" title="항목 삭제">×</button>
+          </div>
+        </div>
+        <div class="collapsible-body">
+          ${showDay ? `
+          <div class="item-day-input-wrapper">
+            <span>주기/일수:</span>
+            <select class="item-freq-select">
+              <option value="monthly" ${freq === 'monthly' ? 'selected' : ''}>매월</option>
+              <option value="daily" ${freq === 'daily' ? 'selected' : ''}>매일</option>
+              <option value="once" ${freq === 'once' ? 'selected' : ''}>단일일 (1회)</option>
+            </select>
+            <span class="day-input-container" style="display: inline-flex; align-items: center; gap: 2px;">
+              <input type="number" class="item-day-input glass-input" min="1" max="31" placeholder="일" value="${day}">
+              <span>일</span>
+            </span>
+          </div>` : ''}
+          <div class="slider-control">
+            <input type="range" class="${sliderClass}" min="0" max="${Math.max(max, amount)}" step="5000" value="${amount}">
+            <input type="text" inputmode="numeric" class="amount-input ${inputClass} glass-input" value="${toFormatted(amount)}">
+          </div>
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      const slider = card.querySelector('input[type="range"]');
+      const input = card.querySelector('.amount-input');
+      const deleteBtn = card.querySelector('.delete-btn');
+      const toggleBtn = card.querySelector('.toggle-btn');
+      const body = card.querySelector('.collapsible-body');
+      const dayInput = card.querySelector('.item-day-input');
+      const freqSelect = card.querySelector('.item-freq-select');
+
+      toggleBtn.addEventListener('click', () => {
+        const isCollapsed = body.classList.toggle('collapsed');
+        card.classList.toggle('is-collapsed', isCollapsed);
+        toggleBtn.textContent = isCollapsed ? '▼' : '▲';
+      });
+
+      slider.addEventListener('input', (e) => {
+        input.value = toFormatted(e.target.value);
+        updateSummary();
+      });
+
+      input.addEventListener('input', (e) => {
+        const raw = applyFormattedInput(e.target);
+        if (raw > Number(slider.max)) slider.max = raw;
+        slider.value = raw;
+        updateSummary();
+      });
+
+      if (dayInput) {
+        dayInput.addEventListener('input', () => updateSummary());
+      }
+      if (freqSelect) {
+        freqSelect.addEventListener('change', () => updateSummary());
+      }
+
+      deleteBtn.addEventListener('click', () => {
+        card.remove();
+        updateSummary();
+      });
+
+      return card;
+    }
+
+    addIncomeBtn.addEventListener('click', () => createGenericCard({ container: extraIncomeList, placeholder: '추가 수입 (예: 부업)', inputClass: 'income-amount-input', sliderClass: 'income-slider', showDay: false }));
+    addFixedBtn.addEventListener('click', () => createGenericCard({ container: fixedExpenseGrid, placeholder: '고정지출 (예: 월세, 구독료)', inputClass: 'fixed-amount-input', sliderClass: 'fixed-slider', amount: 100000 }));
+    addItemBtn.addEventListener('click', () => createGenericCard({ container: targetItemGrid, placeholder: '사고자 하는 물건', inputClass: 'item-amount-input', sliderClass: 'item-slider', amount: 200000 }));
+    addWeeklyBtn.addEventListener('click', () => createGenericCard({ container: weeklyExpenseGrid, placeholder: '주간지출 (예: 식비)', inputClass: 'expense-amount-input', sliderClass: 'expense-slider', amount: 50000 }));
+
+    incomeSlider.addEventListener('input', (e) => {
+      incomeInput.value = toFormatted(e.target.value);
+      updateSummary();
+    });
+
+    incomeInput.addEventListener('input', (e) => {
+      const raw = applyFormattedInput(e.target);
+      if (raw > Number(incomeSlider.max)) incomeSlider.max = raw;
+      incomeSlider.value = raw;
+      updateSummary();
+    });
+
+    const ARCHIVE_KEY = 'monthlyBudgetArchives';
+
+    function getArchives() {
+      try {
+        return JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function setArchives(archives) {
+      localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archives));
+    }
+
+    function getFormattedTimestamp() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+    }
+
+    async function saveCurrentMonthArchive() {
+      const curYear = yearSelect.value;
+      const curMonth = String(monthSelect.value).padStart(2, '0');
+      const recordKey = `${curYear}년 ${curMonth}월`;
+
+      const extractCards = (container) => {
+        const cards = [];
+        container.querySelectorAll('.item-card').forEach(card => {
+          const label = card.querySelector('.item-label-input')?.value || '';
+          const amount = card.querySelector('.amount-input')?.value || '0';
+          const day = card.querySelector('.item-day-input')?.value || '';
+          const freq = card.querySelector('.item-freq-select')?.value || 'monthly';
+          cards.push({ label, amount, day, freq });
+        });
+        return cards;
+      };
+
+      const archiveData = {
+        year: curYear,
+        month: curMonth,
+        savedAt: getFormattedTimestamp(),
+        income: incomeInput.value,
+        extraIncome: extractCards(extraIncomeList),
+        fixedExpenses: extractCards(fixedExpenseGrid),
+        targetItems: extractCards(targetItemGrid),
+        weeklyExpenses: extractCards(weeklyExpenseGrid),
+        summary: {
+          usable: usableBalanceEl.textContent,
+          weekly: weeklyBudgetEl.textContent,
+          final: finalBalanceEl.textContent
+        }
+      };
+
+      const archives = getArchives();
+      archives[recordKey] = archiveData;
+      setArchives(archives);
+
+      if (window.saveToFirebase) {
+        await window.saveToFirebase(recordKey, archiveData);
+      } else {
+        showToast(`${recordKey} 마감 기록이 성공적으로 저장되었습니다.`);
+      }
+    }
+
+    async function deleteArchiveRecord(recordKey) {
+      if (!confirm(`'${recordKey}' 기록을 정말 삭제하시겠습니까?`)) return;
+
+      const archives = getArchives();
+      delete archives[recordKey];
+      setArchives(archives);
+
+      if (window.deleteFromFirebase) {
+        await window.deleteFromFirebase(recordKey);
+      } else {
+        showToast(`${recordKey} 기록이 삭제되었습니다.`);
+      }
+
+      renderArchivesModal();
+    }
+
+    async function deleteArchiveSubItem(recordKey, category, index) {
+      const archives = getArchives();
+      if (!archives[recordKey] || !archives[recordKey][category]) return;
+
+      archives[recordKey][category].splice(index, 1);
+      setArchives(archives);
+
+      if (window.saveToFirebase) {
+        await window.saveToFirebase(recordKey, archives[recordKey]);
+      }
+
+      showToast(`항목이 삭제되었습니다.`);
+      renderArchivesModal(recordKey);
+    }
+
+    function restoreArchiveToDashboard(recordKey) {
+      const archives = getArchives();
+      const data = archives[recordKey];
+      if (!data) return;
+
+      yearSelect.value = parseInt(data.year, 10);
+      monthSelect.value = parseInt(data.month, 10);
+      calState.year = parseInt(data.year, 10);
+      calState.month = parseInt(data.month, 10);
+
+      const rawIncome = toNumber(data.income);
+      incomeInput.value = toFormatted(rawIncome);
+      if (rawIncome > Number(incomeSlider.max)) incomeSlider.max = rawIncome;
+      incomeSlider.value = rawIncome;
+
+      extraIncomeList.innerHTML = '';
+      fixedExpenseGrid.innerHTML = '';
+      targetItemGrid.innerHTML = '';
+      weeklyExpenseGrid.innerHTML = '';
+
+      if (data.extraIncome) {
+        data.extraIncome.forEach(item => {
+          createGenericCard({
+            container: extraIncomeList,
+            label: item.label,
+            amount: toNumber(item.amount),
+            placeholder: '추가 수입',
+            inputClass: 'income-amount-input',
+            sliderClass: 'income-slider',
+            showDay: false
+          });
+        });
+      }
+
+      if (data.fixedExpenses) {
+        data.fixedExpenses.forEach(item => {
+          createGenericCard({
+            container: fixedExpenseGrid,
+            label: item.label,
+            amount: toNumber(item.amount),
+            placeholder: '고정지출',
+            inputClass: 'fixed-amount-input',
+            sliderClass: 'fixed-slider',
+            showDay: true,
+            freq: item.freq || 'monthly',
+            day: item.day || 10
+          });
+        });
+      }
+
+      if (data.targetItems) {
+        data.targetItems.forEach(item => {
+          createGenericCard({
+            container: targetItemGrid,
+            label: item.label,
+            amount: toNumber(item.amount),
+            placeholder: '사고자 하는 물건',
+            inputClass: 'item-amount-input',
+            sliderClass: 'item-slider',
+            showDay: true,
+            freq: item.freq || 'monthly',
+            day: item.day || 10
+          });
+        });
+      }
+
+      if (data.weeklyExpenses) {
+        data.weeklyExpenses.forEach(item => {
+          createGenericCard({
+            container: weeklyExpenseGrid,
+            label: item.label,
+            amount: toNumber(item.amount),
+            placeholder: '주간지출',
+            inputClass: 'expense-amount-input',
+            sliderClass: 'expense-slider',
+            showDay: true,
+            freq: item.freq || 'monthly',
+            day: item.day || 10
+          });
+        });
+      }
+
+      updateSummary();
+      archiveModal.classList.remove('is-visible');
+      showToast(`${recordKey} 데이터 상태로 복원되었습니다. 수정 및 추가를 진행하세요.`);
+    }
+
+    async function renderArchivesModal(targetKey = null) {
+      let archives = getArchives();
+
+      if (window.loadFromFirebase) {
+        const cloudData = await window.loadFromFirebase();
+        if (cloudData) {
+          archives = cloudData;
+        }
+      }
+
+      const keys = Object.keys(archives);
+
+      archiveSidebar.innerHTML = '';
+      archiveDetail.innerHTML = '';
+
+      if (keys.length === 0) {
+        archiveSidebar.innerHTML = '<span style="font-size:12px; color:rgba(255,255,255,0.4);">기록 없음</span>';
+        archiveDetail.innerHTML = '<div style="text-align:center; padding: 40px; color: rgba(255,255,255,0.4);">저장된 월별 기록이 없습니다.<br>"이번 달 마감하고 저장" 버튼을 눌러보세요.</div>';
+        return;
+      }
+
+      const currentRecordKey = `${yearSelect.value}년 ${String(monthSelect.value).padStart(2, '0')}월`;
+      const activeKey = targetKey && keys.includes(targetKey) ? targetKey : (keys.includes(currentRecordKey) ? currentRecordKey : keys[0]);
+
+      keys.forEach(key => {
+        const tab = document.createElement('div');
+        tab.className = `archive-tab ${key === activeKey ? 'active' : ''}`;
+        
+        tab.innerHTML = `
+          <span>${key}</span>
+          <button type="button" class="archive-tab-delete-btn" title="해당 월 기록 삭제">×</button>
+        `;
+
+        tab.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('archive-tab-delete-btn')) {
+            renderArchivesModal(key);
+          }
+        });
+
+        const delBtn = tab.querySelector('.archive-tab-delete-btn');
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteArchiveRecord(key);
+        });
+
+        archiveSidebar.appendChild(tab);
+      });
+
+      const selectedData = archives[activeKey];
+      if (!selectedData) return;
+
+      const renderSubRows = (items, category, color) => {
+        if (!items || items.length === 0) return '';
+        return items.map((item, idx) => {
+          let freqText = '';
+          if (item.freq === 'daily') freqText = '(매일)';
+          else if (item.freq === 'once') freqText = `(${item.day || 1}일 1회)`;
+          else if (item.day) freqText = `(${item.day}일)`;
+
+          return `
+          <div class="archive-item-row">
+            <div class="archive-item-left">
+              <span>${item.label || '항목'} ${freqText}</span>
+            </div>
+            <div class="archive-item-right">
+              <span style="color:${color}; font-weight:600;">₩${item.amount}</span>
+              <button type="button" class="archive-item-delete-btn" title="항목 삭제" onclick="deleteArchiveSubItem('${activeKey}', '${category}', ${idx})">×</button>
+            </div>
+          </div>
+        `;
+        }).join('');
+      };
+
+      let extraIncomeHtml = renderSubRows(selectedData.extraIncome, 'extraIncome', '#4caf50');
+      let fixedHtml = renderSubRows(selectedData.fixedExpenses, 'fixedExpenses', '#ff9800');
+      let targetHtml = renderSubRows(selectedData.targetItems, 'targetItems', '#e040fb');
+      let weeklyHtml = renderSubRows(selectedData.weeklyExpenses, 'weeklyExpenses', '#ff6b6b');
+
+      archiveDetail.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <button type="button" class="restore-archive-btn" id="restore-btn">이 기록 불러와서 수정/추가</button>
+          <div style="font-size:12px; color:rgba(255,255,255,0.4);">저장 일시: ${selectedData.savedAt || '-'}</div>
+        </div>
+        
+        <div class="summary-grid" style="margin-bottom: 12px; margin-top: 8px;">
+          <div class="summary-box-card" style="grid-column: span 2;">
+            <span>실사용 가능 금액</span>
+            <strong style="color: #70baff; font-size: 18px;">${selectedData.summary?.usable || '₩0'}</strong>
+          </div>
+          <div class="summary-box-card">
+            <span>주당 권장 예산</span>
+            <strong style="color: #4caf50;">${selectedData.summary?.weekly || '₩0'}</strong>
+          </div>
+          <div class="summary-box-card">
+            <span>최종 남은 잔액</span>
+            <strong style="color: #ffffff;">${selectedData.summary?.final || '₩0'}</strong>
+          </div>
+        </div>
+
+        <div>
+          <div class="archive-section-title">주요 데이터 명세</div>
+          <div class="archive-item-list">
+            <div class="archive-item-row">
+              <div class="archive-item-left"><span>기본 월급/실수령액</span></div>
+              <div class="archive-item-right"><span style="color:#4caf50; font-weight:bold;">₩${selectedData.income}</span></div>
+            </div>
+            ${extraIncomeHtml}
+            ${fixedHtml}
+            ${targetHtml}
+            ${weeklyHtml}
+          </div>
+        </div>
+      `;
+
+      const restoreBtn = document.getElementById('restore-btn');
+      if (restoreBtn) {
+        restoreBtn.addEventListener('click', () => restoreArchiveToDashboard(activeKey));
+      }
+    }
+
+    saveMonthBtn.addEventListener('click', saveCurrentMonthArchive);
+
+    viewArchiveBtn.addEventListener('click', async () => {
+      await renderArchivesModal();
+      archiveModal.classList.add('is-visible');
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+      archiveModal.classList.remove('is-visible');
+    });
+
+    archiveModal.addEventListener('click', (e) => {
+      if (e.target === archiveModal) {
+        archiveModal.classList.remove('is-visible');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && archiveModal.classList.contains('is-visible')) {
+        archiveModal.classList.remove('is-visible');
+      }
+    });
+
+    function formatDateStr(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    const SCHEDULE_KEY = 'calendarSchedule';
+    function loadSchedule() { try { return JSON.parse(localStorage.getItem(SCHEDULE_KEY) || '{}'); } catch (e) { return {}; } }
+
+    function getExpenseSchedules(dateList) {
+      const expenseSchedules = {};
+      const allCards = Array.from(document.querySelectorAll('.dashboard-card .item-card'));
+
+      allCards.forEach(card => {
+        const label = card.querySelector('.item-label-input')?.value.trim() || '지출';
+        const freqSelect = card.querySelector('.item-freq-select');
+        const dayInput = card.querySelector('.item-day-input');
+        if (!freqSelect || !dayInput) return;
+
+        const freq = freqSelect.value;
+        const dayVal = parseInt(dayInput.value.trim(), 10);
+        const amount = card.querySelector('.amount-input').value;
+
+        dateList.forEach(dateObj => {
+          const dateStr = formatDateStr(dateObj);
+          const d = dateObj.getDate();
+
+          if (freq === 'daily' || ((freq === 'monthly' || freq === 'once') && dayVal === d)) {
+            if (!expenseSchedules[dateStr]) expenseSchedules[dateStr] = [];
+            expenseSchedules[dateStr].push({ text: `[지출예정] ${label} (${amount}원)`, color: '#ff6b6b' });
+          }
+        });
+      });
+      return expenseSchedules;
+    }
+
+    const lunarHolidaysMap = {
+      2026: { lunarNewYear: '2026-02-17', chuseok: '2026-09-25' },
+      2027: { lunarNewYear: '2027-02-06', chuseok: '2027-09-15' },
+      2028: { lunarNewYear: '2028-01-26', chuseok: '2028-10-03' },
+      2029: { lunarNewYear: '2029-02-13', chuseok: '2029-08-23' },
+      2030: { lunarNewYear: '2030-02-03', chuseok: '2030-09-12' },
+      2031: { lunarNewYear: '2031-01-23', chuseok: '2031-10-01' }
+    };
+
+    function addDays(dateStr, days) {
+      const d = new Date(dateStr);
+      d.setDate(d.getDate() + days);
+      return formatDateStr(d);
+    }
+
+    function getKoreanHolidays(year) {
+      const holidays = {};
+
+      const fixedHolidays = {
+        '01-01': '신정',
+        '03-01': '삼일절',
+        '05-05': '어린이날',
+        '06-06': '현충일',
+        '08-15': '광복절',
+        '10-03': '개천절',
+        '10-09': '한글날',
+        '12-25': '크리스마스'
+      };
+
+      Object.entries(fixedHolidays).forEach(([mmdd, name]) => {
+        holidays[`${year}-${mmdd}`] = name;
+      });
+
+      const lunarData = lunarHolidaysMap[year];
+      if (lunarData) {
+        const lny = lunarData.lunarNewYear;
+        holidays[addDays(lny, -1)] = '설날 연휴';
+        holidays[lny] = '설날';
+        holidays[addDays(lny, 1)] = '설날 연휴';
+
+        const ch = lunarData.chuseok;
+        holidays[addDays(ch, -1)] = '추석 연휴';
+        holidays[ch] = '추석';
+        holidays[addDays(ch, 1)] = '추석 연휴';
+      }
+
+      const checkSubstituteList = ['삼일절', '광복절', '개천절', '한글날', '어린이날', '설날', '설날 연휴', '추석', '추석 연휴'];
+      
+      Object.keys(holidays).forEach(dateKey => {
+        const hName = holidays[dateKey];
+        if (checkSubstituteList.includes(hName)) {
+          const d = new Date(dateKey);
+          const dayOfWeek = d.getDay();
+
+          if (dayOfWeek === 0 || dayOfWeek === 6) {
+            let nextDate = new Date(d);
+            while (true) {
+              nextDate.setDate(nextDate.getDate() + 1);
+              const nextKey = formatDateStr(nextDate);
+              const nextDow = nextDate.getDay();
+              
+              if (nextDow !== 0 && nextDow !== 6 && !holidays[nextKey]) {
+                holidays[nextKey] = '대체공휴일';
+                break;
+              }
+            }
+          }
+        }
+      });
+
+      return holidays;
+    }
+
+    const holidayMap = {};
+    for (let y = startYear; y <= startYear + 5; y++) {
+      Object.assign(holidayMap, getKoreanHolidays(y));
+    }
+
+    const calTitleEl = document.getElementById('cal-title');
+    const calendarGrid = document.getElementById('calendar-grid');
+    const calPrevBtn = document.getElementById('cal-prev');
+    const calNextBtn = document.getElementById('cal-next');
+
+    const calState = { 
+      year: parseInt(yearSelect.value, 10), 
+      month: parseInt(monthSelect.value, 10)
+    };
+
+    function renderCalendar() {
+      const y = calState.year;
+      const m = calState.month;
+      
+      const nextM = m === 12 ? 1 : m + 1;
+      const nextY = m === 12 ? y + 1 : y;
+      
+      calTitleEl.textContent = `${y}.${String(m).padStart(2,'0')}.10 ~ ${nextY}.${String(nextM).padStart(2,'0')}.09 (${m}월차)`;
+
+      const startDate = new Date(y, m - 1, 10);
+      const endDate = new Date(nextY, nextM - 1, 9);
+
+      const dateList = [];
+      let cur = new Date(startDate);
+      while (cur <= endDate) {
+        dateList.push(new Date(cur));
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      const startWeekday = startDate.getDay();
+      const schedule = loadSchedule();
+      const expenseSchedules = getExpenseSchedules(dateList);
+      const todayStr = formatDateStr(new Date());
+
+      calendarGrid.innerHTML = '';
+
+      for (let i = 0; i < startWeekday; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day cal-day-empty';
+        calendarGrid.appendChild(empty);
+      }
+
+      dateList.forEach(dateObj => {
+        const dateStr = formatDateStr(dateObj);
+        const monthNum = dateObj.getMonth() + 1;
+        const d = dateObj.getDate();
+        const weekday = dateObj.getDay();
+        
+        const holidayName = holidayMap[dateStr];
+        const userEvents = schedule[dateStr] || [];
+        const autoEvents = expenseSchedules[dateStr] || [];
+
+        let numColor = '#fff';
+        if (weekday === 0 || holidayName) numColor = '#ff6b6b';
+        else if (weekday === 6) numColor = '#70baff';
+
+        let dotsHtml = '';
+        if (userEvents.length + autoEvents.length > 0) {
+          dotsHtml += '<div class="cal-dots-holder">';
+          autoEvents.forEach(e => dotsHtml += `<div class="cal-dot" style="background-color: ${e.color};"></div>`);
+          userEvents.forEach(e => dotsHtml += `<div class="cal-dot" style="background-color: ${e.color || '#4caf50'};"></div>`);
+          dotsHtml += '</div>';
+        }
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-day' + (dateStr === todayStr ? ' cal-today' : '');
+        cell.innerHTML = `
+          <div class="cal-day-num" style="color:${numColor};">${monthNum}/${d}</div>
+          ${holidayName ? `<div class="holiday-name" title="${holidayName}">${holidayName}</div>` : ''}
+          ${dotsHtml}
+        `;
+        calendarGrid.appendChild(cell);
+      });
+    }
+
+    yearSelect.addEventListener('change', () => {
+      calState.year = parseInt(yearSelect.value, 10);
+      renderCalendar();
+    });
+
+    monthSelect.addEventListener('change', () => {
+      calState.month = parseInt(monthSelect.value, 10);
+      renderCalendar();
+    });
+
+    calPrevBtn.addEventListener('click', () => {
+      calState.month -= 1;
+      if (calState.month < 1) { 
+        calState.month = 12; 
+        calState.year -= 1; 
+      }
+      yearSelect.value = calState.year;
+      monthSelect.value = calState.month;
+      renderCalendar();
+    });
+
+    calNextBtn.addEventListener('click', () => {
+      calState.month += 1;
+      if (calState.month > 12) { 
+        calState.month = 1; 
+        calState.year += 1; 
+      }
+      yearSelect.value = calState.year;
+      monthSelect.value = calState.month;
+      renderCalendar();
+    });
+
+    createGenericCard({ container: fixedExpenseGrid, label: '월세 / 관리비', amount: 500000, placeholder: '고정지출', inputClass: 'fixed-amount-input', sliderClass: 'fixed-slider' });
+    createGenericCard({ container: targetItemGrid, label: '전자기기 구매', amount: 300000, placeholder: '사고자 하는 물건', inputClass: 'item-amount-input', sliderClass: 'item-slider' });
+    createGenericCard({ container: weeklyExpenseGrid, label: '주간 생활비/식비', amount: 150000, placeholder: '주간지출', inputClass: 'expense-amount-input', sliderClass: 'expense-slider' });
+
+    updateSummary();
+    renderCalendar();
+  </script>
+
+  <!-- Firebase SDK 및 실시간 연동 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCAyr_wQVHrB8w6mFFT_IJuBzf7TSnk9c",
+      authDomain: "banks-50585.firebaseapp.com",
+      databaseURL: "https://banks-50585-default-rtdb.firebaseio.com",
+      projectId: "banks-50585",
+      storageBucket: "banks-50585.firebasestorage.app",
+      messagingSenderId: "779004705244",
+      appId: "1:779004705244:web:c92a34bd3a76432342b719"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.saveToFirebase = async function(recordKey, data) {
+      try {
+        await set(ref(db, 'records/' + recordKey), data);
+        showToast(`${recordKey} 기록이 클라우드에 성공적으로 저장되었습니다.`);
+      } catch (e) {
+        console.error("저장 오류:", e);
+        showToast("저장 실패: " + e.message);
+      }
+    };
+
+    window.deleteFromFirebase = async function(recordKey) {
+      try {
+        await remove(ref(db, 'records/' + recordKey));
+        showToast(`${recordKey} 기록이 클라우드에서 삭제되었습니다.`);
+      } catch (e) {
+        console.error("삭제 오류:", e);
+        showToast("삭제 실패: " + e.message);
+      }
+    };
+
+    window.loadFromFirebase = async function() {
+      try {
+        const dbRef = ref(db);
+        const snapshot = await get(child(dbRef, 'records'));
+        return snapshot.exists() ? snapshot.val() : null;
+      } catch (e) {
+        console.error("불러오기 오류:", e);
+        return null;
+      }
+    };
+
+    const recordsRef = ref(db, 'records');
+    onValue(recordsRef, (snapshot) => {
+      const data = snapshot.exists() ? snapshot.val() : {};
+      localStorage.setItem('monthlyBudgetArchives', JSON.stringify(data));
+
+      const archiveModal = document.getElementById('archive-modal');
+      if (archiveModal && archiveModal.classList.contains('is-visible')) {
+        renderArchivesModal();
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,2903 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>여행 바우처 & 일정 및 경비 관리</title>
+  
+  <!-- Firebase v9+ Compatibility SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+      color: #1d1d1f;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      padding: 30px 20px 180px 20px;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* 탭 화면 제어 */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* 헤더 영역 */
+    .header {
+      margin-bottom: 20px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .header-info { flex: 1; }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1d1d1f;
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      font-size: 15px;
+      color: #8e8e93;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+    
+    /* 동행자 닉네임 선택 탭 */
+    .member-tags {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .member-tag {
+      font-size: 14px;
+      color: #8e8e93;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .member-tag.active {
+      color: #1d1d1f;
+      font-weight: 700;
+      font-size: 15px;
+      border-bottom: 2px solid #007aff;
+      padding-bottom: 2px;
+    }
+
+    .btn-header-edit {
+      background: rgba(120, 120, 128, 0.12);
+      border: none;
+      color: #007aff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    /* 경비 스크롤 박스 */
+    .expense-scroll-container {
+      max-height: calc(100vh - 350px);
+      overflow-y: auto;
+      padding-right: 4px;
+      padding-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .expense-scroll-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .expense-scroll-container::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+
+    .expense-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 16px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    }
+
+    .expense-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .expense-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1d1d1f;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-detail-link {
+      font-size: 12px;
+      color: #8e8e93;
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: underline;
+    }
+
+    .amount-badge {
+      background: #eef3fc;
+      color: #007aff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .amount-badge.negative {
+      background: #ffebe9;
+      color: #ff3b30;
+    }
+
+    .amount-badge .arrow {
+      font-size: 10px;
+      color: #8e8e93;
+    }
+
+    .local-expense-box {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 18px;
+    }
+
+    .local-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .local-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .local-action-btn {
+      font-size: 12px;
+      color: #8e8e93;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .local-list-scroll {
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .local-list-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .local-list-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+
+    .local-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    /* 하단 고정 총합 박스 */
+    .sticky-total-box {
+      position: fixed;
+      bottom: 92px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 390px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 998;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #636366;
+    }
+
+    .total-label.highlight {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+
+    .total-amount-badge {
+      background: #eef3fc;
+      color: #007aff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+
+    .total-amount-badge.used {
+      background: #f2f2f7;
+      color: #3a3a3c;
+    }
+
+    .total-amount-badge.negative {
+      background: #ffebe9;
+      color: #ff3b30;
+    }
+
+    /* Day 목록 */
+    .day-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .day-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .day-header {
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .day-title-box {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .day-date-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: #8e8e93;
+    }
+
+    .day-header .header-right-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .day-header .icon {
+      font-size: 12px;
+      color: #8e8e93;
+      transition: transform 0.3s ease;
+    }
+
+    .day-card.open {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 1);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.08);
+    }
+    .day-card.open .day-header .icon {
+      transform: rotate(180deg);
+    }
+
+    .day-content {
+      display: none;
+      padding: 0 16px 16px 16px;
+    }
+    .day-card.open .day-content { display: block; }
+
+    .voucher-slider {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      gap: 12px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 4px;
+    }
+    .voucher-slider::-webkit-scrollbar { display: none; }
+
+    .voucher-item {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+    }
+
+    .voucher-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1d1d1f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .voucher-preview {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    }
+
+    .voucher-preview img {
+      width: 100%;
+      max-height: 250px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .comment-preview-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(242, 242, 247, 0.85);
+      border-radius: 12px;
+      font-size: 13px;
+      color: #3a3a3c;
+      line-height: 1.4;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .comment-preview-box.highlighted {
+      background: rgba(255, 249, 219, 0.9);
+      border: 1px solid rgba(255, 204, 0, 0.3);
+    }
+
+    .comment-preview-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .comment-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .comment-tag.highlight { background: #ffcc00; color: #1d1d1f; }
+    .comment-tag.recent { background: #e5e5ea; color: #636366; }
+
+    .day-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 6px;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: #007aff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .btn-edit-link { color: #8e8e93; }
+
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-nav {
+      background: none;
+      border: none;
+      color: #8e8e93;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-text-action {
+      background: none;
+      border: none;
+      color: #007aff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+
+    .warning-notice {
+      font-size: 12px;
+      color: #ff3b30;
+      margin-top: 8px;
+      line-height: 1.4;
+      background: rgba(255, 59, 48, 0.08);
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    .place-scroll-box {
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .place-scroll-box::-webkit-scrollbar {
+      width: 4px;
+    }
+    .place-scroll-box::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 4px;
+    }
+    .place-scroll-box::-webkit-scrollbar-thumb {
+      background: #1d1d1f;
+      border-radius: 4px;
+    }
+
+    .place-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .place-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+
+    .btn-map-view {
+      background: rgba(0, 122, 255, 0.08);
+      border: none;
+      color: #007aff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* 하단 탭 네비게이션 바 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 390px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 8px;
+      z-index: 999;
+    }
+
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      border-radius: 24px;
+      cursor: pointer;
+      color: #8e8e93;
+      transition: all 0.2s ease;
+      gap: 3px;
+    }
+
+    .nav-tab.active {
+      background: #ffffff;
+      color: #1d1d1f;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-tab svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .nav-tab span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* 모달 레이아웃 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 1);
+      padding: 20px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      animation: modalPop 0.25s ease-out;
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .modal-header-bar h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1d1d1f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+
+    .btn-close-icon {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #8e8e93;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .view-modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-height: 70vh;
+      overflow: hidden;
+    }
+
+    .view-modal-img {
+      width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #000;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 200px;
+      max-height: 340px;
+      margin-bottom: 12px;
+    }
+
+    .chat-bubble {
+      background: rgba(242, 242, 247, 0.9);
+      border-radius: 16px;
+      padding: 10px 14px;
+      max-width: 88%;
+      align-self: flex-start;
+      font-size: 14px;
+      color: #1d1d1f;
+      line-height: 1.45;
+      user-select: text;
+    }
+
+    .chat-bubble.highlighted {
+      background: #fff8d6;
+      border: 1px solid rgba(255, 204, 0, 0.5);
+    }
+
+    .chat-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #8e8e93;
+      gap: 8px;
+    }
+
+    .btn-pin {
+      background: none;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 2px 4px;
+      color: #8e8e93;
+    }
+
+    .btn-pin.active {
+      color: #ff9500;
+      font-weight: 700;
+    }
+
+    .chat-input-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 20px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      outline: none;
+      user-select: text;
+    }
+
+    .btn-send {
+      background: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .voucher-list-container {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .list-item-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .list-item-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .list-item-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1d1d1f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-item-del {
+      background: rgba(255, 59, 48, 0.1);
+      border: none;
+      color: #ff3b30;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #8e8e93;
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      outline: none;
+      user-select: text;
+    }
+
+    .date-picker-box {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .date-display-btn {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(0, 122, 255, 0.08);
+      border: 1px solid rgba(0, 122, 255, 0.2);
+      border-radius: 10px;
+      color: #007aff;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+    .cal-header span {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+    .cal-btn {
+      background: none;
+      border: none;
+      color: #007aff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      text-align: center;
+    }
+    .cal-day-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8e8e93;
+      padding: 4px 0;
+    }
+    .cal-day {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #1d1d1f;
+      transition: all 0.15s;
+    }
+    .cal-day.disabled { opacity: 0.2; cursor: default; }
+    .cal-day.selected-start, .cal-day.selected-end {
+      background: #007aff !important;
+      color: #fff !important;
+      font-weight: 700;
+    }
+    .cal-day.in-range {
+      background: rgba(0, 122, 255, 0.15);
+      color: #007aff;
+      border-radius: 0;
+    }
+
+    .reorder-hint {
+      font-size: 12px;
+      color: #007aff;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .reorder-list-box {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 14px;
+      padding: 8px 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      touch-action: pan-y;
+    }
+
+    @keyframes iosWiggle {
+      0% { transform: rotate(-1.2deg) scale(1); }
+      50% { transform: rotate(1.2deg) scale(1.02); }
+      100% { transform: rotate(-1.2deg) scale(1); }
+    }
+
+    .reorder-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s, background-color 0.2s;
+    }
+
+    .reorder-item.dragging {
+      opacity: 0.85;
+      background: #f0f7ff;
+      border: 1px solid #007aff;
+      box-shadow: 0 8px 16px rgba(0, 122, 255, 0.2);
+      animation: iosWiggle 0.22s infinite ease-in-out !important;
+      z-index: 10;
+      touch-action: none;
+    }
+
+    .reorder-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1d1d1f;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .reorder-item-badge {
+      font-size: 11px;
+      color: #007aff;
+      background: rgba(0,122,255,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .drag-handle {
+      font-size: 18px;
+      color: #8e8e93;
+      cursor: grab;
+      padding: 4px 8px;
+      touch-action: none;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-save { background: #007aff; color: #fff; }
+    .btn-delete-all { background: #ff3b30; color: #fff; }
+    .btn-cancel { background: rgba(120, 120, 128, 0.16); color: #1d1d1f; }
+
+    .empty-voucher {
+      padding: 24px;
+      text-align: center;
+      color: #8e8e93;
+      border: 1px dashed rgba(0, 0, 0, 0.15);
+      border-radius: 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- 1. 경비 탭 -->
+    <div id="tab-expense" class="tab-content active">
+      <div class="header">
+        <div class="header-info">
+          <h1>경비 및 예산</h1>
+          <p id="expenseTitleT2">12월 12일~16일 일정</p>
+          <div class="member-tags" id="expenseMemberTagsContainer"></div>
+        </div>
+      </div>
+
+      <!-- 커스텀 예산 & 지출 안내 컴포넌트 -->
+      <div style="
+        background-color: #eef4ff; 
+        border-radius: 16px; 
+        padding: 18px 24px; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1a1a1a;
+        line-height: 1.5;
+        margin-bottom: 14px;
+      ">
+        <div style="
+          font-size: 16px; 
+          font-weight: 700; 
+          color: #0056b3; 
+          margin-bottom: 6px; 
+          display: flex; 
+          align-items: center; 
+          gap: 6px;
+        ">
+          <span>💡</span>
+          <span>예산 & 지출 한눈에 보기</span>
+        </div>
+
+        <p style="
+          margin: 0; 
+          font-size: 14px; 
+          color: #334155; 
+          word-break: keep-all;
+        ">
+          사전 결제 항목인 비행기·숙소를 제외한 <strong style="color: #0284c7; font-weight: 700;">현지 경비 잔액</strong> 및 총 지출을 실시간 환율(원화)로 안내합니다.
+        </p>
+      </div>
+
+      <!-- 경비 스크롤 박스 -->
+      <div class="expense-scroll-container" id="expenseContainer">
+        <!-- 사전 예약/결제 항목 (남은 예산 총합 미포함) -->
+        <div class="expense-card">
+          <div class="expense-row">
+            <div class="expense-label">
+              비행기 (사전결제)
+              <span class="btn-detail-link" onclick="openExpenseDetailModal('flight')">상세</span>
+            </div>
+            <div class="amount-badge" id="badge-flight" onclick="openBudgetModal('flight')">
+              <span id="amount-flight">0원</span>
+              <span class="arrow">▼</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="expense-card">
+          <div class="expense-row">
+            <div class="expense-label">
+              숙소 (사전결제)
+              <span class="btn-detail-link" onclick="openExpenseDetailModal('lodging')">상세</span>
+            </div>
+            <div class="amount-badge" id="badge-lodging" onclick="openBudgetModal('lodging')">
+              <span id="amount-lodging">0원</span>
+              <span class="arrow">▼</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 현지 경비 박스 -->
+        <div class="local-expense-box">
+          <div class="local-header">
+            <span class="expense-label">현지 경비</span>
+            <div class="local-actions">
+              <span class="local-action-btn" onclick="openAddLocalCategoryModal()">추가</span>
+              <span class="local-action-btn" onclick="openManageLocalCategoriesModal()">편집</span>
+            </div>
+          </div>
+          <div class="local-list-scroll" id="localCategoriesList">
+            <!-- 현지 경비 세부 항목들 -->
+          </div>
+        </div>
+
+        <!-- 여비 -->
+        <div class="expense-card">
+          <div class="expense-row">
+            <div class="expense-label">
+              여비
+              <span class="btn-detail-link" onclick="openExpenseDetailModal('extra')">상세</span>
+            </div>
+            <div class="amount-badge" id="badge-extra" onclick="openBudgetModal('extra')">
+              <span id="amount-extra">0엔</span>
+              <span class="arrow">▼</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 고정 총합 영역 -->
+      <div class="sticky-total-box">
+        <div class="total-row">
+          <span class="total-label">현지 지출 총액</span>
+          <div class="total-amount-badge used">
+            <span id="totalUsedAmountText">0원</span>
+          </div>
+        </div>
+        <div class="total-row">
+          <span class="total-label highlight">남은 현지 예산 총합</span>
+          <div class="total-amount-badge" id="totalAmountBadge">
+            <span id="totalAmountText">0원</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 바우처 탭 -->
+    <div id="tab-voucher" class="tab-content">
+      <div class="header">
+        <div class="header-info">
+          <h1 id="titleT1">후쿠오카, 일본</h1>
+          <p id="titleT2">12월 12일~16일 일정</p>
+          <div class="member-tags" id="memberTagsContainer"></div>
+        </div>
+        <button class="btn-header-edit" onclick="openHeaderEditModal()">편집</button>
+      </div>
+
+      <div class="day-list" id="dayList"></div>
+    </div>
+
+    <!-- 3. 저장 탭 -->
+    <div id="tab-saved" class="tab-content">
+      <div class="header">
+        <div class="header-info">
+          <h1>저장된 장소</h1>
+          <p id="savedTitleT2">12월 12일~16일 일정</p>
+          <div class="member-tags" id="savedMemberTagsContainer"></div>
+        </div>
+      </div>
+
+      <div class="day-list" id="savedPlacesDayList"></div>
+    </div>
+
+  </div>
+
+  <!-- 하단 3탭 네비게이션 바 -->
+  <div class="bottom-nav">
+    <div class="nav-tab active" onclick="switchTab('tab-expense')">
+      <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>경비, 예산</span>
+    </div>
+    <div class="nav-tab" onclick="switchTab('tab-voucher')">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>바우처</span>
+    </div>
+    <div class="nav-tab" onclick="switchTab('tab-saved')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+      <span>저장</span>
+    </div>
+  </div>
+
+  <!-- 초기 예산 설정 모달 -->
+  <div class="modal-overlay" id="budgetModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="budgetModalTitle">초기 예산 설정</h3>
+        <button class="btn-close-icon" onclick="closeBudgetModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>초기 설정 예산 금액</label>
+        <input type="number" id="inputInitialBudget" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>표시 화폐 선택</label>
+        <select id="selectBudgetCurrency">
+          <option value="KRW">원(₩)</option>
+          <option value="JPY">엔(¥)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeBudgetModal()">취소</button>
+        <button class="btn btn-save" onclick="saveInitialBudget()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 헤더 편집 모달 -->
+  <div class="modal-overlay" id="headerEditModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3>여행 정보 및 일정 편집</h3>
+        <button class="btn-close-icon" onclick="closeHeaderEditModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>여행지 (T1)</label>
+        <input type="text" id="editT1" placeholder="예: 후쿠오카, 일본">
+      </div>
+      <div class="form-group">
+        <label>동행자 닉네임 (쉼표로 구분)</label>
+        <input type="text" id="editMembers" placeholder="예: 은섭, 지수">
+      </div>
+      <div class="form-group">
+        <label>일정 기간 선택 (T2)</label>
+        <div class="date-picker-box">
+          <div class="date-display-btn" id="dateRangeDisplay">날짜를 선택해 주세요</div>
+          <div class="cal-header">
+            <button class="cal-btn" onclick="changeCalMonth(-1)">◀</button>
+            <span id="calMonthTitle">2026년 12월</span>
+            <button class="cal-btn" onclick="changeCalMonth(1)">▶</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="warning-notice">
+          ⚠️ <strong>일정 변경 주의:</strong> 여행 일정을 축소할 경우, 제외되는 Day에 저장된 바우처 및 찜한 장소 데이터도 함께 삭제될 수 있습니다.
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Day 순서 변경</label>
+        <div class="reorder-hint">
+          <span>💡</span> 우측 핸들(☰)을 누르고 드래그하여 순서를 변경하세요
+        </div>
+        <div class="reorder-list-box" id="reorderListBox"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeHeaderEditModal()">취소</button>
+        <button class="btn btn-save" onclick="saveHeaderInfo()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 경비 상세 가계부 모달 -->
+  <div class="modal-overlay" id="expenseDetailModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="expenseDetailTitle">경비 상세 내역</h3>
+        <button class="btn-close-icon" onclick="closeExpenseDetailModal()">✕</button>
+      </div>
+      <div class="voucher-list-container" id="expenseLogContainer"></div>
+      
+      <div class="form-group">
+        <label>사용처 / 메모</label>
+        <input type="text" id="inputLogMemo" placeholder="예: 점심 식사, 버스 비">
+      </div>
+      <div class="form-group" style="display:flex; gap:8px;">
+        <div style="flex:2;">
+          <label>사용 금액</label>
+          <input type="number" id="inputLogAmount" placeholder="0">
+        </div>
+        <div style="flex:1;">
+          <label>화폐</label>
+          <select id="inputLogCurrency">
+            <option value="JPY">엔(¥)</option>
+            <option value="KRW">원(₩)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-save" onclick="addExpenseLog()">가계부 추가</button>
+        <button class="btn btn-cancel" onclick="closeExpenseDetailModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현지 경비 항목 추가 모달 -->
+  <div class="modal-overlay" id="addLocalCatModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3>현지 경비 항목 추가</h3>
+        <button class="btn-close-icon" onclick="closeAddLocalCategoryModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>항목 이름</label>
+        <input type="text" id="inputLocalCatName" placeholder="예: 기념품, 간식">
+      </div>
+      <div class="form-group">
+        <label>초기 예산 금액</label>
+        <input type="number" id="inputLocalCatAmount" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>기본 화폐</label>
+        <select id="inputLocalCatCurrency">
+          <option value="JPY">엔(¥)</option>
+          <option value="KRW">원(₩)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeAddLocalCategoryModal()">취소</button>
+        <button class="btn btn-save" onclick="saveNewLocalCategory()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현지 경비 항목 관리 모달 -->
+  <div class="modal-overlay" id="manageLocalCatModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3>현지 경비 항목 편집</h3>
+        <button class="btn-close-icon" onclick="closeManageLocalCategoriesModal()">✕</button>
+      </div>
+      <div class="voucher-list-container" id="manageLocalCatContainer"></div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeManageLocalCategoriesModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이미지 확대 모달 -->
+  <div class="modal-overlay" id="viewModal" onclick="closeViewModal(event)">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="viewModalTitle">바우처 상세</h3>
+        <button class="btn-close-icon" onclick="forceCloseViewModal()">✕</button>
+      </div>
+      <div class="view-modal-content">
+        <img id="viewModalImg" class="view-modal-img" src="" alt="Voucher Detail">
+      </div>
+    </div>
+  </div>
+
+  <!-- 바우처 관리 모달 -->
+  <div class="modal-overlay" id="listManageModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="listModalHeader">바우처 목록</h3>
+        <button class="btn-close-icon" onclick="closeListManageModal()">✕</button>
+      </div>
+      <div class="voucher-list-container" id="voucherListContainer"></div>
+      <div class="modal-actions">
+        <button class="btn btn-delete-all" onclick="deleteAllVouchers()">모두 지우기</button>
+        <button class="btn btn-cancel" onclick="closeListManageModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 새 바우처 추가 모달 -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="addModalHeader">새 바우처 추가</h3>
+        <button class="btn-close-icon" onclick="closeAddModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>바우처 제목</label>
+        <input type="text" id="inputTitle" placeholder="예: 오사카성 입장 바우처">
+      </div>
+      <div class="form-group">
+        <label>바우처 이미지 파일</label>
+        <input type="file" id="inputFile" accept="image/*">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeAddModal()">취소</button>
+        <button class="btn btn-save" id="btnSaveVoucher" onclick="saveNewVoucher()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 채팅 댓글 모달 -->
+  <div class="modal-overlay" id="chatModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <div>
+          <h3 id="chatModalHeader">바우처 댓글</h3>
+          <div id="chatModalSubHeader" style="font-size:12px; color:#8e8e93; margin-top:2px;"></div>
+        </div>
+        <button class="btn-close-icon" onclick="closeChatModal()">✕</button>
+      </div>
+
+      <div class="chat-container" id="chatContainer"></div>
+
+      <div class="chat-input-bar">
+        <input type="text" class="chat-input" id="chatInput" placeholder="메모나 댓글을 입력하세요..." onkeypress="handleChatKeyPress(event)">
+        <button class="btn-send" onclick="sendComment()">전송</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 찜한 장소 추가 모달 -->
+  <div class="modal-overlay" id="addPlaceModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="addPlaceModalHeader">장소 추가</h3>
+        <button class="btn-close-icon" onclick="closeAddPlaceModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>장소 이름</label>
+        <input type="text" id="inputPlaceName" placeholder="예: 오호리 공원">
+      </div>
+      <div class="form-group">
+        <label>지도 검색 URL 또는 메모 (선택)</label>
+        <input type="text" id="inputPlaceUrl" placeholder="예: https://maps.google.com/...">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeAddPlaceModal()">취소</button>
+        <button class="btn btn-save" onclick="saveNewPlace()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 찜한 장소 편집 모달 -->
+  <div class="modal-overlay" id="editPlaceModal">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="editPlaceModalHeader">장소 목록 편집</h3>
+        <button class="btn-close-icon" onclick="closeEditPlaceModal()">✕</button>
+      </div>
+      <div class="voucher-list-container" id="placeListContainer"></div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeEditPlaceModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const IMGBB_API_KEY = "a75bc23c30b5908364dd0229685c42b7";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCAyr_wQVHrB8w6mFFT_IJuBzf7TSnk9c",
+      authDomain: "banks-50585.firebaseapp.com",
+      databaseURL: "https://banks-50585-default-rtdb.firebaseio.com",
+      projectId: "banks-50585",
+      storageBucket: "banks-50585.firebasestorage.app",
+      messagingSenderId: "779004705244",
+      appId: "1:779004705244:web:c92a34bd3a76432342b719"
+    };
+
+    let db = null;
+
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.database();
+    } catch (e) {
+      console.warn("Firebase 연결 실패: 로컬 데이터 모드로 전환됩니다.", e);
+    }
+
+    const STORAGE_KEY_INFO = 'travel_app_info';
+    const STORAGE_KEY_SCHEDULES = 'travel_app_schedules';
+    const STORAGE_KEY_SAVED_PLACES = 'travel_app_saved_places';
+    const STORAGE_KEY_EXPENSES = 'travel_app_expenses';
+
+    let travelInfo = {
+      t1: '후쿠오카, 일본',
+      t2: '12월 12일~16일 일정',
+      startDate: new Date(2026, 11, 12),
+      endDate: new Date(2026, 11, 16),
+      members: ['은섭', '지수'],
+      currentMember: '은섭'
+    };
+
+    let userSchedules = {};
+    let savedPlaces = {};
+
+    let expenseData = {
+      '은섭': {
+        flight: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
+        lodging: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
+        extra: { initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+        localCategories: [
+          { id: 'cat_1', name: '식비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+          { id: 'cat_2', name: '교통비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+          { id: 'cat_3', name: '투어, 티켓', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+          { id: 'cat_4', name: '쇼핑', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+          { id: 'cat_5', name: '가챠', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] }
+        ]
+      }
+    };
+
+    let jpyToKrwRate = 9.1;
+
+    let activeModalId = null;
+    let currentOpenDay = null;
+    let currentSavedOpenDay = null;
+    let editingDay = null;
+    let activeVoucherId = null;
+    let activeMember = null;
+    let activeExpenseKey = null;
+
+    async function fetchExchangeRate() {
+      try {
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/JPY');
+        const data = await res.json();
+        if (data && data.rates && data.rates.KRW) {
+          jpyToKrwRate = data.rates.KRW;
+        }
+      } catch (e) {
+        console.warn('환율 정보 로드 실패, 기본 환율을 사용합니다.', e);
+      }
+      renderExpenseTab();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+
+      const tabs = ['tab-expense', 'tab-voucher', 'tab-saved'];
+      const index = tabs.indexOf(tabId);
+      if (index !== -1) {
+        document.querySelectorAll('.nav-tab')[index].classList.add('active');
+      }
+
+      if (tabId === 'tab-saved') {
+        renderSavedPlaces();
+      } else if (tabId === 'tab-expense') {
+        renderExpenseTab();
+      }
+    }
+
+    function openModalWithHistory(modalId) {
+      document.getElementById(modalId).classList.add('active');
+      activeModalId = modalId;
+      history.pushState({ modalOpen: modalId }, '');
+    }
+
+    function closeModalWithHistory(modalId, force = false) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.remove('active');
+      if (activeModalId === modalId) activeModalId = null;
+      if (!force && history.state && history.state.modalOpen === modalId) {
+        history.back();
+      }
+    }
+
+    window.addEventListener('popstate', (e) => {
+      if (activeModalId) {
+        document.getElementById(activeModalId).classList.remove('active');
+        activeModalId = null;
+      }
+    });
+
+    function syncWithFirebase() {
+      if (!db) return;
+      db.ref('travelInfo').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          travelInfo = {
+            ...val,
+            startDate: parseValidDate(val.startDate, new Date(2026, 11, 12)),
+            endDate: parseValidDate(val.endDate, new Date(2026, 11, 16))
+          };
+          renderHeader();
+        }
+      });
+
+      db.ref('userSchedules').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          userSchedules = normalizeSchedules(val);
+          render();
+        }
+      });
+
+      db.ref('savedPlaces').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          savedPlaces = val;
+          renderSavedPlaces();
+        }
+      });
+
+      db.ref('expenseData').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          expenseData = val;
+          renderExpenseTab();
+        }
+      });
+    }
+
+    function saveData() {
+      try {
+        const infoToSave = {
+          ...travelInfo,
+          startDate: travelInfo.startDate ? travelInfo.startDate.toISOString() : null,
+          endDate: travelInfo.endDate ? travelInfo.endDate.toISOString() : null
+        };
+        localStorage.setItem(STORAGE_KEY_INFO, JSON.stringify(infoToSave));
+        localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(userSchedules));
+        localStorage.setItem(STORAGE_KEY_SAVED_PLACES, JSON.stringify(savedPlaces));
+        localStorage.setItem(STORAGE_KEY_EXPENSES, JSON.stringify(expenseData));
+
+        if (db) {
+          db.ref('travelInfo').set(infoToSave);
+          db.ref('userSchedules').set(userSchedules);
+          db.ref('savedPlaces').set(savedPlaces);
+          db.ref('expenseData').set(expenseData);
+        }
+      } catch (e) {
+        console.error('데이터 저장 예외 발생:', e);
+      }
+    }
+
+    function parseValidDate(dateVal, fallbackDate = null) {
+      if (!dateVal) return fallbackDate;
+      const parsed = new Date(dateVal);
+      return isNaN(parsed.getTime()) ? fallbackDate : parsed;
+    }
+
+    function loadData() {
+      try {
+        const savedInfo = localStorage.getItem(STORAGE_KEY_INFO);
+        const savedSchedules = localStorage.getItem(STORAGE_KEY_SCHEDULES);
+        const savedPlacesData = localStorage.getItem(STORAGE_KEY_SAVED_PLACES);
+        const savedExpenses = localStorage.getItem(STORAGE_KEY_EXPENSES);
+
+        if (savedInfo) {
+          const parsed = JSON.parse(savedInfo);
+          travelInfo = {
+            ...parsed,
+            startDate: parseValidDate(parsed.startDate, new Date(2026, 11, 12)),
+            endDate: parseValidDate(parsed.endDate, new Date(2026, 11, 16))
+          };
+        }
+
+        if (savedSchedules) {
+          userSchedules = normalizeSchedules(JSON.parse(savedSchedules));
+        }
+
+        if (savedPlacesData) {
+          savedPlaces = JSON.parse(savedPlacesData);
+        }
+
+        if (savedExpenses) {
+          expenseData = JSON.parse(savedExpenses);
+        }
+      } catch (e) {
+        console.error('데이터 불러오기 중 예외 발생:', e);
+      }
+    }
+
+    function normalizeSchedules(schedules) {
+      if (!schedules) return schedules;
+      Object.keys(schedules).forEach((member) => {
+        const days = schedules[member];
+        if (Array.isArray(days)) {
+          days.forEach((day) => {
+            if (!day.vouchers) day.vouchers = [];
+            day.vouchers.forEach((v) => {
+              if (!v.comments) v.comments = [];
+            });
+          });
+        }
+      });
+      return schedules;
+    }
+
+    function getCurMemberExpense() {
+      const m = travelInfo.currentMember;
+      if (!expenseData[m]) {
+        expenseData[m] = {
+          flight: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
+          lodging: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
+          extra: { initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+          localCategories: [
+            { id: 'cat_1', name: '식비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_2', name: '교통비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_3', name: '투어, 티켓', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_4', name: '쇼핑', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_5', name: '가챠', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] }
+          ]
+        };
+      }
+      return expenseData[m];
+    }
+
+    function getItemUsedSum(itemObj) {
+      const logs = itemObj.logs || [];
+      return logs.reduce((acc, log) => {
+        if (log.currency === itemObj.currency) {
+          return acc + log.amount;
+        } else {
+          return acc + (itemObj.currency === 'KRW' ? convertToKRW(log.amount, 'JPY') : log.amount / jpyToKrwRate);
+        }
+      }, 0);
+    }
+
+    function getItemUsedSumKRW(itemObj) {
+      const logs = itemObj.logs || [];
+      return logs.reduce((acc, log) => convertToKRW(log.amount, log.currency) + acc, 0);
+    }
+
+    function getRemainingAmount(itemObj) {
+      const initial = itemObj.initialAmount || 0;
+      const usedSum = getItemUsedSum(itemObj);
+      return initial - Math.round(usedSum);
+    }
+
+    /* 렌더링 수정: 비행기와 숙소는 현지 남은 예산 총합에서 제외 처리 */
+    function renderExpenseTab() {
+      const exp = getCurMemberExpense();
+
+      renderExpenseItem('flight', exp.flight);
+      renderExpenseItem('lodging', exp.lodging);
+      renderExpenseItem('extra', exp.extra);
+
+      const localListContainer = document.getElementById('localCategoriesList');
+      localListContainer.innerHTML = '';
+
+      exp.localCategories.forEach(cat => {
+        const remaining = getRemainingAmount(cat);
+        const displayVal = formatCurrencyVal(remaining, cat.currency, cat.displayCurrency);
+        const isNegative = remaining < 0;
+        
+        const div = document.createElement('div');
+        div.className = 'local-item';
+        div.innerHTML = `
+          <div class="expense-label">
+            ${cat.name}
+            <span class="btn-detail-link" onclick="openExpenseDetailModal('${cat.id}')">상세</span>
+          </div>
+          <div class="amount-badge ${isNegative ? 'negative' : ''}" onclick="openBudgetModal('${cat.id}')">
+            <span>${displayVal}</span>
+            <span class="arrow">▼</span>
+          </div>
+        `;
+        localListContainer.appendChild(div);
+      });
+
+      let totalRemainingKRW = 0;
+      let totalUsedKRW = 0;
+
+      // 비행기(flight)와 숙소(lodging) 제외, 오직 여비(extra)만 현지 예산 총합 계산에 집계
+      const extraRem = getRemainingAmount(exp.extra);
+      totalRemainingKRW += convertToKRW(extraRem, exp.extra.currency);
+      totalUsedKRW += getItemUsedSumKRW(exp.extra);
+
+      // 현지 경비 세부 카테고리 잔액 및 지출 총합 추가
+      exp.localCategories.forEach(cat => {
+        const rem = getRemainingAmount(cat);
+        totalRemainingKRW += convertToKRW(rem, cat.currency);
+        totalUsedKRW += getItemUsedSumKRW(cat);
+      });
+
+      const totalBadge = document.getElementById('totalAmountBadge');
+      if (totalRemainingKRW < 0) {
+        totalBadge.classList.add('negative');
+      } else {
+        totalBadge.classList.remove('negative');
+      }
+
+      document.getElementById('totalAmountText').innerText = `${Math.round(totalRemainingKRW).toLocaleString()}원`;
+      document.getElementById('totalUsedAmountText').innerText = `${Math.round(totalUsedKRW).toLocaleString()}원`;
+    }
+
+    function convertToKRW(amount, currency) {
+      if (currency === 'KRW') return amount;
+      return amount * jpyToKrwRate;
+    }
+
+    function formatCurrencyVal(amount, nativeCurrency, displayCurrency) {
+      if (nativeCurrency === displayCurrency) {
+        const unit = nativeCurrency === 'KRW' ? '원' : '엔';
+        return `${amount.toLocaleString()}${unit}`;
+      } else {
+        if (displayCurrency === 'KRW') {
+          const converted = Math.round(amount * jpyToKrwRate);
+          return `${converted.toLocaleString()}원`;
+        } else {
+          const converted = Math.round(amount / jpyToKrwRate);
+          return `${converted.toLocaleString()}엔`;
+        }
+      }
+    }
+
+    function renderExpenseItem(key, item) {
+      const el = document.getElementById(`amount-${key}`);
+      const badge = document.getElementById(`badge-${key}`);
+      if (el) {
+        const remaining = getRemainingAmount(item);
+        el.innerText = formatCurrencyVal(remaining, item.currency, item.displayCurrency);
+        if (badge) {
+          if (remaining < 0) badge.classList.add('negative');
+          else badge.classList.remove('negative');
+        }
+      }
+    }
+
+    function openBudgetModal(key) {
+      activeExpenseKey = key;
+      const targetObj = getActiveExpenseObject();
+
+      let title = '초기 예산 설정';
+      const exp = getCurMemberExpense();
+      if (key === 'flight') title = '비행기 초기 금액 (사전결제)';
+      else if (key === 'lodging') title = '숙소 초기 금액 (사전결제)';
+      else if (key === 'extra') title = '여비 초기 예산';
+      else {
+        const cat = exp.localCategories.find(c => c.id === key);
+        if (cat) title = `${cat.name} 초기 예산`;
+      }
+
+      document.getElementById('budgetModalTitle').innerText = title;
+      document.getElementById('inputInitialBudget').value = targetObj.initialAmount || 0;
+      document.getElementById('selectBudgetCurrency').value = targetObj.currency || 'KRW';
+
+      openModalWithHistory('budgetModal');
+    }
+
+    function closeBudgetModal() {
+      closeModalWithHistory('budgetModal');
+      activeExpenseKey = null;
+    }
+
+    function saveInitialBudget() {
+      const amount = parseFloat(document.getElementById('inputInitialBudget').value) || 0;
+      const currency = document.getElementById('selectBudgetCurrency').value;
+
+      const targetObj = getActiveExpenseObject();
+      if (targetObj) {
+        targetObj.initialAmount = amount;
+        targetObj.currency = currency;
+        targetObj.displayCurrency = currency;
+      }
+
+      saveData();
+      renderExpenseTab();
+      closeBudgetModal();
+    }
+
+    function openExpenseDetailModal(key) {
+      activeExpenseKey = key;
+      const exp = getCurMemberExpense();
+      let title = '';
+
+      if (key === 'flight') title = '비행기 결제 상세 내역';
+      else if (key === 'lodging') title = '숙소 결제 상세 내역';
+      else if (key === 'extra') title = '여비 가계부 상세';
+      else {
+        const cat = exp.localCategories.find(c => c.id === key);
+        if (cat) title = `${cat.name} 가계부 상세`;
+      }
+
+      document.getElementById('expenseDetailTitle').innerText = title;
+      renderExpenseLogs();
+      openModalWithHistory('expenseDetailModal');
+    }
+
+    function closeExpenseDetailModal() {
+      closeModalWithHistory('expenseDetailModal');
+      activeExpenseKey = null;
+    }
+
+    function getActiveExpenseObject() {
+      const exp = getCurMemberExpense();
+      if (['flight', 'lodging', 'extra'].includes(activeExpenseKey)) {
+        return exp[activeExpenseKey];
+      } else {
+        return exp.localCategories.find(c => c.id === activeExpenseKey);
+      }
+    }
+
+    function renderExpenseLogs() {
+      const targetObj = getActiveExpenseObject();
+      const container = document.getElementById('expenseLogContainer');
+      container.innerHTML = '';
+
+      if (!targetObj || !targetObj.logs || targetObj.logs.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">작성된 가계부 내역이 없습니다.</div>`;
+        return;
+      }
+
+      targetObj.logs.forEach((log) => {
+        const unit = log.currency === 'KRW' ? '원' : '엔';
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <div class="list-item-info">
+            <span class="list-item-title">${log.memo} (${log.amount.toLocaleString()}${unit})</span>
+          </div>
+          <button class="btn-item-del" onclick="deleteExpenseLog(${log.id})">삭제</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function addExpenseLog() {
+      const memo = document.getElementById('inputLogMemo').value.trim();
+      const amount = parseFloat(document.getElementById('inputLogAmount').value);
+      const currency = document.getElementById('inputLogCurrency').value;
+
+      if (!memo || isNaN(amount)) {
+        alert('사용처 메모와 올바른 금액을 입력해주세요.');
+        return;
+      }
+
+      const targetObj = getActiveExpenseObject();
+      if (!targetObj.logs) targetObj.logs = [];
+
+      targetObj.logs.push({
+        id: Date.now(),
+        memo: memo,
+        amount: amount,
+        currency: currency
+      });
+
+      document.getElementById('inputLogMemo').value = '';
+      document.getElementById('inputLogAmount').value = '';
+
+      saveData();
+      renderExpenseLogs();
+      renderExpenseTab();
+    }
+
+    function deleteExpenseLog(logId) {
+      const targetObj = getActiveExpenseObject();
+      if (targetObj && targetObj.logs) {
+        targetObj.logs = targetObj.logs.filter(l => l.id !== logId);
+        saveData();
+        renderExpenseLogs();
+        renderExpenseTab();
+      }
+    }
+
+    function openAddLocalCategoryModal() {
+      document.getElementById('inputLocalCatName').value = '';
+      document.getElementById('inputLocalCatAmount').value = '';
+      openModalWithHistory('addLocalCatModal');
+    }
+
+    function closeAddLocalCategoryModal() {
+      closeModalWithHistory('addLocalCatModal');
+    }
+
+    function saveNewLocalCategory() {
+      const name = document.getElementById('inputLocalCatName').value.trim();
+      const amount = parseFloat(document.getElementById('inputLocalCatAmount').value) || 0;
+      const currency = document.getElementById('inputLocalCatCurrency').value;
+
+      if (!name) {
+        alert('항목 이름을 입력하세요.');
+        return;
+      }
+
+      const exp = getCurMemberExpense();
+      exp.localCategories.push({
+        id: `cat_${Date.now()}`,
+        name: name,
+        initialAmount: amount,
+        currency: currency,
+        displayCurrency: currency,
+        logs: []
+      });
+
+      saveData();
+      renderExpenseTab();
+      closeAddLocalCategoryModal();
+    }
+
+    function openManageLocalCategoriesModal() {
+      renderManageLocalCategories();
+      openModalWithHistory('manageLocalCatModal');
+    }
+
+    function closeManageLocalCategoriesModal() {
+      closeModalWithHistory('manageLocalCatModal');
+    }
+
+    function renderManageLocalCategories() {
+      const exp = getCurMemberExpense();
+      const container = document.getElementById('manageLocalCatContainer');
+      container.innerHTML = '';
+
+      if (exp.localCategories.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">등록된 현지 경비 항목이 없습니다.</div>`;
+        return;
+      }
+
+      exp.localCategories.forEach(cat => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <span class="list-item-title">${cat.name}</span>
+          <button class="btn-item-del" onclick="deleteLocalCategory('${cat.id}')">삭제</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deleteLocalCategory(catId) {
+      const exp = getCurMemberExpense();
+      exp.localCategories = exp.localCategories.filter(c => c.id !== catId);
+      saveData();
+      renderManageLocalCategories();
+      renderExpenseTab();
+    }
+
+    function renderHeader() {
+      document.getElementById('titleT1').innerText = travelInfo.t1 || '여행지 미정';
+      document.getElementById('titleT2').innerText = travelInfo.t2 || '일정 미정';
+      document.getElementById('expenseTitleT2').innerText = travelInfo.t2 || '일정 미정';
+      document.getElementById('savedTitleT2').innerText = travelInfo.t2 || '일정 미정';
+
+      const tagsContainer = document.getElementById('memberTagsContainer');
+      const savedTagsContainer = document.getElementById('savedMemberTagsContainer');
+      const expenseTagsContainer = document.getElementById('expenseMemberTagsContainer');
+
+      tagsContainer.innerHTML = '';
+      savedTagsContainer.innerHTML = '';
+      expenseTagsContainer.innerHTML = '';
+
+      (travelInfo.members || []).forEach(member => {
+        const isActive = member === travelInfo.currentMember;
+
+        const createTag = () => {
+          const span = document.createElement('span');
+          span.className = `member-tag ${isActive ? 'active' : ''}`;
+          span.innerText = member;
+          span.onclick = () => selectMember(member);
+          return span;
+        };
+
+        tagsContainer.appendChild(createTag());
+        savedTagsContainer.appendChild(createTag());
+        expenseTagsContainer.appendChild(createTag());
+      });
+    }
+
+    function selectMember(member) {
+      travelInfo.currentMember = member;
+      currentOpenDay = null;
+      currentSavedOpenDay = null;
+      saveData();
+      renderHeader();
+      render();
+      renderSavedPlaces();
+      renderExpenseTab();
+    }
+
+    function initSchedulesForRange(startDate, endDate) {
+      const validStart = parseValidDate(startDate, new Date());
+      const validEnd = parseValidDate(endDate, validStart);
+      const dayDiff = Math.max(1, Math.round((validEnd - validStart) / (1000 * 60 * 60 * 24)) + 1);
+
+      travelInfo.members.forEach(m => {
+        if (!userSchedules[m]) userSchedules[m] = [];
+        const currentDays = userSchedules[m];
+
+        if (currentDays.length < dayDiff) {
+          for (let i = currentDays.length + 1; i <= dayDiff; i++) {
+            currentDays.push({ day: i, title: `Day ${i}`, vouchers: [] });
+          }
+        } else if (currentDays.length > dayDiff) {
+          userSchedules[m] = currentDays.slice(0, dayDiff);
+        }
+
+        if (!savedPlaces[m]) savedPlaces[m] = {};
+      });
+    }
+
+    function getFormattedDate(dayNum) {
+      if (!travelInfo.startDate || isNaN(travelInfo.startDate.getTime())) return '';
+      const targetDate = new Date(travelInfo.startDate);
+      targetDate.setDate(targetDate.getDate() + (dayNum - 1));
+
+      const month = targetDate.getMonth() + 1;
+      const date = targetDate.getDate();
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayOfWeek = days[targetDate.getDay()];
+
+      return `${month}.${date} (${dayOfWeek})`;
+    }
+
+    function formatT2Text(sDate, eDate) {
+      const validS = parseValidDate(sDate);
+      const validE = parseValidDate(eDate);
+      if (!validS) return '일정을 선택하세요';
+
+      const sm = validS.getMonth() + 1;
+      const sd = validS.getDate();
+
+      if (!validE || validS.getTime() === validE.getTime()) {
+        return `${sm}월 ${sd}일 일정`;
+      }
+      const em = validE.getMonth() + 1;
+      const ed = validE.getDate();
+      return sm === em ? `${sm}월 ${sd}일~${ed}일 일정` : `${sm}월 ${sd}일~${em}월 ${ed}일 일정`;
+    }
+
+    function getDisplayComment(comments) {
+      if (!comments || comments.length === 0) return null;
+      const highlighted = comments.find(c => c.isHighlighted);
+      if (highlighted) return { comment: highlighted, isHighlight: true };
+      return { comment: comments[comments.length - 1], isHighlight: false };
+    }
+
+    function getScheduleForMember(member) {
+      const targetMember = member || travelInfo.currentMember;
+      if (!userSchedules[targetMember]) {
+        initSchedulesForRange(travelInfo.startDate, travelInfo.endDate);
+      }
+      return userSchedules[targetMember];
+    }
+
+    function render() {
+      const scrollPositions = {};
+      const schedule = getScheduleForMember();
+      schedule.forEach(item => {
+        const el = document.getElementById(`slider-${item.day}`);
+        if (el) scrollPositions[item.day] = el.scrollLeft;
+      });
+
+      const container = document.getElementById('dayList');
+      container.innerHTML = '';
+
+      schedule.forEach((item) => {
+        const isOpen = item.day === currentOpenDay;
+        const card = document.createElement('div');
+        card.className = `day-card ${isOpen ? 'open' : ''}`;
+
+        const dateStr = getFormattedDate(item.day);
+        let contentHTML = '';
+
+        if (item.vouchers && item.vouchers.length > 0) {
+          const itemsHTML = item.vouchers.map((v) => {
+            const displayObj = getDisplayComment(v.comments);
+            let commentPreviewHTML = '';
+
+            if (displayObj) {
+              const tagClass = displayObj.isHighlight ? 'highlight' : 'recent';
+              const tagText = displayObj.isHighlight ? '★ 강조' : '최신';
+              const boxClass = displayObj.isHighlight ? 'highlighted' : '';
+
+              commentPreviewHTML = `
+                <div class="comment-preview-box ${boxClass}" onclick="openChatModal(${item.day}, ${v.id})">
+                  <span class="comment-tag ${tagClass}">${tagText}</span>
+                  <span class="comment-preview-text">${displayObj.comment.text}</span>
+                </div>
+              `;
+            }
+
+            return `
+              <div class="voucher-item">
+                <div class="voucher-title">${v.title || '바우처'}</div>
+                <div class="voucher-preview" onclick="openViewModal(${item.day}, ${v.id})">
+                  <img src="${v.image}" alt="바우처 이미지">
+                </div>
+                ${commentPreviewHTML}
+              </div>
+            `;
+          }).join('');
+
+          contentHTML = `<div class="voucher-slider" id="slider-${item.day}">${itemsHTML}</div>`;
+        } else {
+          contentHTML = `
+            <div class="empty-voucher" onclick="openAddModal(${item.day})">
+              + [${travelInfo.currentMember}] 님의 바우처가 없습니다.<br>터치하여 바우처를 추가해보세요.
+            </div>
+          `;
+        }
+
+        let navHTML = '';
+        if (item.vouchers && item.vouchers.length > 1) {
+          navHTML = `
+            <div class="nav-controls">
+              <button class="btn-nav" onclick="scrollVoucher(${item.day}, 'prev')">이전</button>
+              <button class="btn-nav" onclick="scrollVoucher(${item.day}, 'next')">다음</button>
+            </div>
+          `;
+        }
+
+        const firstVoucherId = (item.vouchers && item.vouchers.length > 0) ? item.vouchers[0].id : null;
+        const chatButtonAction = firstVoucherId 
+          ? `openChatModalForCurrentSlide(${item.day})` 
+          : `alert('바우처를 먼저 추가해 주세요.')`;
+
+        card.innerHTML = `
+          <div class="day-header" onclick="toggleDay(${item.day})">
+            <div class="day-title-box">
+              <span>${item.title}</span>
+              ${dateStr ? `<span class="day-date-text">${dateStr}</span>` : ''}
+            </div>
+            <span class="icon">▼</span>
+          </div>
+          <div class="day-content">
+            ${contentHTML}
+            <div class="day-footer">
+              <div class="action-group">
+                ${(item.vouchers && item.vouchers.length > 0) ? `<button class="btn-link btn-edit-link" onclick="openListManageModal(${item.day})">편집</button>` : ''}
+                <button class="btn-link" onclick="openAddModal(${item.day})">+ 바우처 추가</button>
+                <button class="btn-link" onclick="${chatButtonAction}">댓글</button>
+              </div>
+              ${navHTML}
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      Object.keys(scrollPositions).forEach(day => {
+        const el = document.getElementById(`slider-${day}`);
+        if (el) el.scrollLeft = scrollPositions[day];
+      });
+    }
+
+    function renderSavedPlaces() {
+      const container = document.getElementById('savedPlacesDayList');
+      container.innerHTML = '';
+
+      const schedule = getScheduleForMember();
+      const currentMemberPlaces = (savedPlaces[travelInfo.currentMember]) || {};
+
+      schedule.forEach((item) => {
+        const isOpen = item.day === currentSavedOpenDay;
+        const card = document.createElement('div');
+        card.className = `day-card ${isOpen ? 'open' : ''}`;
+
+        const dateStr = getFormattedDate(item.day);
+        const places = currentMemberPlaces[item.day] || [];
+
+        let placesHTML = '';
+        if (places.length > 0) {
+          const listHTML = places.map(p => `
+            <div class="place-item">
+              <span class="place-name">${p.name}</span>
+              <button class="btn-map-view" onclick="openMapView('${p.name}', '${p.url || ''}')">지도보기</button>
+            </div>
+          `).join('');
+
+          placesHTML = `<div class="place-scroll-box">${listHTML}</div>`;
+        } else {
+          placesHTML = `
+            <div style="text-align:center; padding:16px; color:#8e8e93; font-size:13px;">
+              찜한 장소가 없습니다.
+            </div>
+          `;
+        }
+
+        const actionButtonsHTML = isOpen ? `
+          <button class="btn-text-action" onclick="openAddPlaceModal(event, ${item.day})">추가</button>
+          <button class="btn-text-action" onclick="openEditPlaceModal(event, ${item.day})">편집</button>
+        ` : '';
+
+        card.innerHTML = `
+          <div class="day-header" onclick="toggleSavedDay(event, ${item.day})">
+            <div class="day-title-box">
+              <span>Day ${item.day}</span>
+              ${dateStr ? `<span class="day-date-text">${dateStr}</span>` : ''}
+            </div>
+            <div class="header-right-group">
+              ${actionButtonsHTML}
+              <span class="icon">▼</span>
+            </div>
+          </div>
+          <div class="day-content">
+            ${placesHTML}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function toggleSavedDay(event, day) {
+      if (event.target.classList.contains('btn-text-action')) return;
+      currentSavedOpenDay = (currentSavedOpenDay === day) ? null : day;
+      renderSavedPlaces();
+    }
+
+    function openMapView(name, url) {
+      if (url && url.startsWith('http')) {
+        window.open(url, '_blank');
+      } else {
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`, '_blank');
+      }
+    }
+
+    function openAddPlaceModal(event, day) {
+      if (event) event.stopPropagation();
+      editingDay = day;
+      document.getElementById('inputPlaceName').value = '';
+      document.getElementById('inputPlaceUrl').value = '';
+      openModalWithHistory('addPlaceModal');
+    }
+
+    function closeAddPlaceModal() {
+      closeModalWithHistory('addPlaceModal');
+    }
+
+    function saveNewPlace() {
+      const name = document.getElementById('inputPlaceName').value.trim();
+      const url = document.getElementById('inputPlaceUrl').value.trim();
+
+      if (!name) {
+        alert('장소 이름을 입력해주세요.');
+        return;
+      }
+
+      const m = travelInfo.currentMember;
+      if (!savedPlaces[m]) savedPlaces[m] = {};
+      if (!savedPlaces[m][editingDay]) savedPlaces[m][editingDay] = [];
+
+      savedPlaces[m][editingDay].push({
+        id: Date.now(),
+        name: name,
+        url: url
+      });
+
+      saveData();
+      renderSavedPlaces();
+      closeAddPlaceModal();
+    }
+
+    function openEditPlaceModal(event, day) {
+      if (event) event.stopPropagation();
+      editingDay = day;
+      renderEditPlaceList();
+      openModalWithHistory('editPlaceModal');
+    }
+
+    function renderEditPlaceList() {
+      const m = travelInfo.currentMember;
+      const places = (savedPlaces[m] && savedPlaces[m][editingDay]) ? savedPlaces[m][editingDay] : [];
+      const container = document.getElementById('placeListContainer');
+      container.innerHTML = '';
+
+      if (places.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">등록된 장소가 없습니다.</div>`;
+        return;
+      }
+
+      places.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <span class="list-item-title">${idx + 1}. ${p.name}</span>
+          <button class="btn-item-del" onclick="deletePlace(${p.id})">지우기</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deletePlace(placeId) {
+      const m = travelInfo.currentMember;
+      if (savedPlaces[m] && savedPlaces[m][editingDay]) {
+        savedPlaces[m][editingDay] = savedPlaces[m][editingDay].filter(p => p.id !== placeId);
+        saveData();
+        renderEditPlaceList();
+        renderSavedPlaces();
+      }
+    }
+
+    function closeEditPlaceModal() {
+      closeModalWithHistory('editPlaceModal');
+    }
+
+    function openChatModalForCurrentSlide(day) {
+      const slider = document.getElementById(`slider-${day}`);
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === day);
+      if (!dayData || !dayData.vouchers || dayData.vouchers.length === 0) return;
+
+      let voucherIndex = 0;
+      if (slider && slider.clientWidth > 0) {
+        voucherIndex = Math.round(slider.scrollLeft / slider.clientWidth);
+      }
+      
+      const targetVoucher = dayData.vouchers[voucherIndex] || dayData.vouchers[0];
+      openChatModal(day, targetVoucher.id);
+    }
+
+    function scrollVoucher(day, direction) {
+      const slider = document.getElementById(`slider-${day}`);
+      if (!slider) return;
+      const cardWidth = slider.clientWidth;
+      slider.scrollBy({ left: direction === 'next' ? cardWidth : -cardWidth, behavior: 'smooth' });
+    }
+
+    function toggleDay(day) {
+      currentOpenDay = (currentOpenDay === day) ? null : day;
+      render();
+    }
+
+    function openHeaderEditModal() {
+      document.getElementById('editT1').value = travelInfo.t1;
+      document.getElementById('editMembers').value = travelInfo.members.join(', ');
+
+      tempStartDate = parseValidDate(travelInfo.startDate, new Date());
+      tempEndDate = parseValidDate(travelInfo.endDate, tempStartDate);
+
+      if (tempStartDate) {
+        pickerCalYear = tempStartDate.getFullYear();
+        pickerCalMonth = tempStartDate.getMonth();
+      }
+
+      const curSchedule = getScheduleForMember();
+      tempScheduleOrder = JSON.parse(JSON.stringify(curSchedule));
+
+      renderCalendar();
+      renderReorderList();
+      openModalWithHistory('headerEditModal');
+    }
+
+    function closeHeaderEditModal() {
+      closeModalWithHistory('headerEditModal');
+    }
+
+    let draggedIndex = null;
+    let isDragging = false;
+    let pickerCalYear = 2026;
+    let pickerCalMonth = 11;
+    let tempStartDate = new Date(2026, 11, 12);
+    let tempEndDate = new Date(2026, 11, 16);
+    let tempScheduleOrder = [];
+
+    function renderReorderList() {
+      const container = document.getElementById('reorderListBox');
+      container.innerHTML = '';
+
+      if (tempScheduleOrder.length === 0) {
+        container.innerHTML = `<div style="font-size:12px; color:#8e8e93; text-align:center; padding:10px;">등록된 Day가 없습니다.</div>`;
+        return;
+      }
+
+      tempScheduleOrder.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'reorder-item';
+        div.dataset.index = index;
+
+        const voucherCount = item.vouchers ? item.vouchers.length : 0;
+        const badgeHTML = voucherCount > 0 ? `<span class="reorder-item-badge">바우처 ${voucherCount}개</span>` : '';
+
+        div.innerHTML = `
+          <div class="reorder-item-title">
+            <span>Day ${index + 1} (${item.title})</span>
+            ${badgeHTML}
+          </div>
+          <div class="drag-handle">☰</div>
+        `;
+
+        const handle = div.querySelector('.drag-handle');
+
+        handle.addEventListener('touchstart', (e) => startPress(e, index, div), { passive: false });
+        handle.addEventListener('touchend', cancelPress);
+        handle.addEventListener('touchmove', (e) => onMove(e, container), { passive: false });
+
+        handle.addEventListener('mousedown', (e) => startPress(e, index, div));
+        handle.addEventListener('mouseup', cancelPress);
+        handle.addEventListener('mouseleave', cancelPress);
+
+        container.appendChild(div);
+      });
+    }
+
+    function startPress(e, index, element) {
+      isDragging = true;
+      draggedIndex = index;
+      element.classList.add('dragging');
+
+      if (navigator.vibrate) navigator.vibrate(50);
+    }
+
+    function cancelPress() {
+      if (isDragging) {
+        isDragging = false;
+        draggedIndex = null;
+        document.querySelectorAll('.reorder-item').forEach(el => el.classList.remove('dragging'));
+        renderReorderList();
+      }
+    }
+
+    function onMove(e, container) {
+      if (!isDragging || draggedIndex === null) return;
+
+      if (e.cancelable) e.preventDefault();
+
+      const touch = e.touches ? e.touches[0] : e;
+      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (!targetElement) return;
+
+      const itemElement = targetElement.closest('.reorder-item');
+      if (itemElement && container.contains(itemElement)) {
+        const targetIndex = parseInt(itemElement.dataset.index, 10);
+
+        if (!isNaN(targetIndex) && targetIndex !== draggedIndex) {
+          const movedItem = tempScheduleOrder.splice(draggedIndex, 1)[0];
+          tempScheduleOrder.splice(targetIndex, 0, movedItem);
+
+          draggedIndex = targetIndex;
+          renderReorderList();
+
+          const items = container.querySelectorAll('.reorder-item');
+          if (items[draggedIndex]) {
+            items[draggedIndex].classList.add('dragging');
+          }
+        }
+      }
+    }
+
+    function changeCalMonth(delta) {
+      pickerCalMonth += delta;
+      if (pickerCalMonth < 0) {
+        pickerCalMonth = 11;
+        pickerCalYear--;
+      } else if (pickerCalMonth > 11) {
+        pickerCalMonth = 0;
+        pickerCalYear++;
+      }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      document.getElementById('calMonthTitle').innerText = `${pickerCalYear}년 ${pickerCalMonth + 1}월`;
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+
+      const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+      dayLabels.forEach(l => {
+        const div = document.createElement('div');
+        div.className = 'cal-day-label';
+        div.innerText = l;
+        grid.appendChild(div);
+      });
+
+      const firstDay = new Date(pickerCalYear, pickerCalMonth, 1).getDay();
+      const lastDate = new Date(pickerCalYear, pickerCalMonth + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const div = document.createElement('div');
+        div.className = 'cal-day disabled';
+        grid.appendChild(div);
+      }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const div = document.createElement('div');
+        div.className = 'cal-day';
+        div.innerText = d;
+
+        const currDate = new Date(pickerCalYear, pickerCalMonth, d);
+        currDate.setHours(0, 0, 0, 0);
+
+        const sTime = tempStartDate ? new Date(tempStartDate).setHours(0, 0, 0, 0) : null;
+        const eTime = tempEndDate ? new Date(tempEndDate).setHours(0, 0, 0, 0) : null;
+
+        if (sTime && currDate.getTime() === sTime) {
+          div.classList.add('selected-start');
+        }
+        if (eTime && currDate.getTime() === eTime) {
+          div.classList.add('selected-end');
+        }
+        if (sTime && eTime && currDate.getTime() > sTime && currDate.getTime() < eTime) {
+          div.classList.add('in-range');
+        }
+
+        div.onclick = () => selectCalDate(currDate);
+        grid.appendChild(div);
+      }
+
+      document.getElementById('dateRangeDisplay').innerText = formatT2Text(tempStartDate, tempEndDate);
+    }
+
+    function selectCalDate(date) {
+      if (!tempStartDate || (tempStartDate && tempEndDate)) {
+        tempStartDate = date;
+        tempEndDate = null;
+      } else if (tempStartDate && !tempEndDate) {
+        if (date < tempStartDate) {
+          tempStartDate = date;
+          tempEndDate = null;
+        } else {
+          tempEndDate = date;
+        }
+      }
+
+      const validStart = parseValidDate(tempStartDate, new Date());
+      const validEnd = parseValidDate(tempEndDate, validStart);
+      const dayDiff = Math.max(1, Math.round((validEnd - validStart) / (1000 * 60 * 60 * 24)) + 1);
+
+      if (tempScheduleOrder.length < dayDiff) {
+        for (let i = tempScheduleOrder.length + 1; i <= dayDiff; i++) {
+          tempScheduleOrder.push({ day: i, title: `Day ${i}`, vouchers: [] });
+        }
+      } else if (tempScheduleOrder.length > dayDiff) {
+        tempScheduleOrder = tempScheduleOrder.slice(0, dayDiff);
+      }
+
+      renderCalendar();
+      renderReorderList();
+    }
+
+    function saveHeaderInfo() {
+      const newT1 = document.getElementById('editT1').value.trim();
+      const membersRaw = document.getElementById('editMembers').value.trim();
+
+      if (newT1) travelInfo.t1 = newT1;
+
+      if (membersRaw) {
+        const newMembers = membersRaw.split(',').map(m => m.trim()).filter(m => m.length > 0);
+        if (newMembers.length > 0) {
+          travelInfo.members = newMembers;
+          if (!travelInfo.members.includes(travelInfo.currentMember)) {
+            travelInfo.currentMember = travelInfo.members[0];
+          }
+        }
+      }
+
+      if (tempStartDate) {
+        travelInfo.startDate = tempStartDate;
+        travelInfo.endDate = tempEndDate || tempStartDate;
+        travelInfo.t2 = formatT2Text(travelInfo.startDate, travelInfo.endDate);
+      }
+
+      const targetMember = travelInfo.currentMember;
+      tempScheduleOrder.forEach((item, index) => {
+        item.day = index + 1;
+        item.title = `Day ${index + 1}`;
+      });
+
+      userSchedules[targetMember] = tempScheduleOrder;
+
+      saveData();
+      renderHeader();
+      render();
+      renderSavedPlaces();
+      renderExpenseTab();
+      closeHeaderEditModal();
+    }
+
+    function openViewModal(day, voucherId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === day);
+      if (!dayData) return;
+
+      const voucher = dayData.vouchers.find(v => v.id === voucherId);
+      if (!voucher) return;
+
+      document.getElementById('viewModalTitle').innerText = voucher.title || '바우처 상세';
+      document.getElementById('viewModalImg').src = voucher.image;
+      openModalWithHistory('viewModal');
+    }
+
+    function closeViewModal(event) {
+      if (event.target.classList.contains('modal-overlay')) {
+        closeModalWithHistory('viewModal');
+      }
+    }
+
+    function forceCloseViewModal() {
+      closeModalWithHistory('viewModal');
+    }
+
+    function openAddModal(day) {
+      editingDay = day;
+      document.getElementById('inputTitle').value = '';
+      document.getElementById('inputFile').value = '';
+      openModalWithHistory('addModal');
+    }
+
+    function closeAddModal() {
+      closeModalWithHistory('addModal');
+    }
+
+    async function saveNewVoucher() {
+      const title = document.getElementById('inputTitle').value.trim();
+      const fileInput = document.getElementById('inputFile');
+      const saveBtn = document.getElementById('btnSaveVoucher');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('바우처 이미지 파일을 선택해주세요.');
+        return;
+      }
+
+      saveBtn.innerText = '업로드 중...';
+      saveBtn.disabled = true;
+
+      try {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          const schedule = getScheduleForMember();
+          const dayData = schedule.find(d => d.day === editingDay);
+
+          if (dayData) {
+            dayData.vouchers.push({
+              id: Date.now(),
+              title: title || '새 바우처',
+              image: result.data.url,
+              comments: []
+            });
+
+            saveData();
+            render();
+            closeAddModal();
+          }
+        } else {
+          alert('이미지 업로드에 실패했습니다. 다시 시도하세요.');
+        }
+      } catch (error) {
+        console.error('업로드 실패:', error);
+        alert('네트워크 오류로 업로드에 실패했습니다.');
+      } finally {
+        saveBtn.innerText = '저장';
+        saveBtn.disabled = false;
+      }
+    }
+
+    function openListManageModal(day) {
+      editingDay = day;
+      renderVoucherManageList();
+      openModalWithHistory('listManageModal');
+    }
+
+    function closeListManageModal() {
+      closeModalWithHistory('listManageModal');
+    }
+
+    function renderVoucherManageList() {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      const container = document.getElementById('voucherListContainer');
+      container.innerHTML = '';
+
+      if (!dayData || !dayData.vouchers || dayData.vouchers.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">바우처가 없습니다.</div>`;
+        return;
+      }
+
+      dayData.vouchers.forEach((v) => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <div class="list-item-info">
+            <img class="list-item-thumb" src="${v.image}" alt="thumb">
+            <span class="list-item-title">${v.title}</span>
+          </div>
+          <button class="btn-item-del" onclick="deleteVoucher(${v.id})">삭제</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deleteVoucher(voucherId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (dayData) {
+        dayData.vouchers = dayData.vouchers.filter(v => v.id !== voucherId);
+        saveData();
+        renderVoucherManageList();
+        render();
+      }
+    }
+
+    function deleteAllVouchers() {
+      if (confirm('해당 Day의 모든 바우처를 삭제하시겠습니까?')) {
+        const schedule = getScheduleForMember();
+        const dayData = schedule.find(d => d.day === editingDay);
+        if (dayData) {
+          dayData.vouchers = [];
+          saveData();
+          renderVoucherManageList();
+          render();
+          closeListManageModal();
+        }
+      }
+    }
+
+    function openChatModal(day, voucherId) {
+      editingDay = day;
+      activeVoucherId = voucherId;
+
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === day);
+      const voucher = dayData ? dayData.vouchers.find(v => v.id === voucherId) : null;
+
+      if (voucher) {
+        document.getElementById('chatModalSubHeader').innerText = `${dayData.title} - ${voucher.title}`;
+        renderComments();
+        openModalWithHistory('chatModal');
+      }
+    }
+
+    function closeChatModal() {
+      closeModalWithHistory('chatModal');
+      activeVoucherId = null;
+    }
+
+    function renderComments() {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      const voucher = dayData ? dayData.vouchers.find(v => v.id === activeVoucherId) : null;
+      const container = document.getElementById('chatContainer');
+      container.innerHTML = '';
+
+      if (!voucher || !voucher.comments || voucher.comments.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:13px;">등록된 댓글이 없습니다. 메모를 추가해보세요!</div>`;
+        return;
+      }
+
+      voucher.comments.forEach((c) => {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${c.isHighlighted ? 'highlighted' : ''}`;
+        bubble.innerHTML = `
+          <div>${c.text}</div>
+          <div class="chat-meta">
+            <span>${c.author || '익명'} · ${c.date || ''}</span>
+            <button class="btn-pin ${c.isHighlighted ? 'active' : ''}" onclick="toggleHighlightComment(${c.id})">
+              ${c.isHighlighted ? '★ 강조됨' : '☆ 강조하기'}
+            </button>
+          </div>
+        `;
+        container.appendChild(bubble);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function handleChatKeyPress(e) {
+      if (e.key === 'Enter') sendComment();
+    }
+
+    function sendComment() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      const voucher = dayData ? dayData.vouchers.find(v => v.id === activeVoucherId) : null;
+
+      if (voucher) {
+        if (!voucher.comments) voucher.comments = [];
+        const now = new Date();
+        const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        voucher.comments.push({
+          id: Date.now(),
+          author: travelInfo.currentMember,
+          text: text,
+          date: timeStr,
+          isHighlighted: false
+        });
+
+        input.value = '';
+        saveData();
+        renderComments();
+        render();
+      }
+    }
+
+    function toggleHighlightComment(commentId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      const voucher = dayData ? dayData.vouchers.find(v => v.id === activeVoucherId) : null;
+
+      if (voucher && voucher.comments) {
+        voucher.comments.forEach(c => {
+          if (c.id === commentId) {
+            c.isHighlighted = !c.isHighlighted;
+          } else {
+            c.isHighlighted = false;
+          }
+        });
+
+        saveData();
+        renderComments();
+        render();
+      }
+    }
+
+    // 앱 초기화 실행
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadData();
+      syncWithFirebase();
+      initSchedulesForRange(travelInfo.startDate, travelInfo.endDate);
+      renderHeader();
+      render();
+      await fetchExchangeRate();
+    });
+  </script>
+</body>
+</html>
