@@ -98,22 +98,12 @@
       cursor: pointer;
     }
 
-    /* 경비 스크롤 박스 (아이폰 16 프로 등 세로 짧은 화면 대응 최적화) */
-    .expense-scroll-container {
-      max-height: calc(100dvh - 310px);
-      overflow-y: auto;
-      padding-right: 4px;
-      padding-bottom: 10px;
+    /* 경비 영역 컨테이너 (개별 스크롤 박스 제거 및 자연스러운 흐름 배치) */
+    .expense-container {
       display: flex;
       flex-direction: column;
       gap: 12px;
-    }
-    .expense-scroll-container::-webkit-scrollbar {
-      width: 4px;
-    }
-    .expense-scroll-container::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
+      padding-bottom: 20px;
     }
 
     .expense-card {
@@ -212,27 +202,18 @@
       font-weight: 600;
     }
 
-    .local-list-scroll {
-      max-height: 140px;
-      overflow-y: auto;
-      padding-right: 4px;
+    /* 현지 경비 리스트 (스크롤 없이 아래로 쭉 나열되도록 변경) */
+    .local-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
-    }
-    .local-list-scroll::-webkit-scrollbar {
-      width: 4px;
-    }
-    .local-list-scroll::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
     }
 
     .local-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 2px 0;
+      padding: 4px 0;
     }
 
     /* 하단 고정 총합 박스 */
@@ -1030,17 +1011,13 @@
       cursor: pointer;
     }
 
-    /* 아이폰 16 프로 등 세로 비율이 짧은 기기 미디어쿼리 최적화 */
+    /* 아이폰 16 프로 등 화면 최적화 */
     @media (max-height: 850px) {
       .app-container {
         padding: 14px 16px 145px 16px;
       }
       .header {
         margin-bottom: 10px;
-      }
-      .expense-scroll-container {
-        max-height: calc(100dvh - 270px);
-        gap: 10px;
       }
       .expense-card, .local-expense-box {
         padding: 12px 14px;
@@ -1062,7 +1039,7 @@
         </div>
       </div>
 
-      <!-- 안내 컴포넌트 (접기/펼치기 기능 추가) -->
+      <!-- 안내 컴포넌트 -->
       <div style="
         background-color: #eef4ff; 
         border-radius: 14px; 
@@ -1105,8 +1082,8 @@
         </div>
       </div>
 
-      <!-- 경비 스크롤 박스 -->
-      <div class="expense-scroll-container" id="expenseContainer">
+      <!-- 경비 리스트 컨테이너 (스크롤 박스 클래스 제거 -> 전체 스크롤 활용) -->
+      <div class="expense-container" id="expenseContainer">
         <!-- 사전 예약/결제 항목 -->
         <div class="expense-card">
           <div class="expense-row">
@@ -1143,8 +1120,8 @@
               <span class="local-action-btn" onclick="openManageLocalCategoriesModal()">편집</span>
             </div>
           </div>
-          <div class="local-list-scroll" id="localCategoriesList">
-            <!-- 현지 경비 세부 항목들 -->
+          <div class="local-list" id="localCategoriesList">
+            <!-- 현지 경비 세부 항목들이 스크롤 없이 아래로 쭉 나열됨 -->
           </div>
         </div>
 
