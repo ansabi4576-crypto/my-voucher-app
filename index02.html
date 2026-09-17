@@ -25,14 +25,16 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      min-height: 100dvh;
       padding: 0;
     }
 
     .app-container {
       width: 100%;
       max-width: 430px;
-      padding: 30px 20px 180px 20px;
+      padding: 20px 20px 160px 20px;
       min-height: 100vh;
+      min-height: 100dvh;
       position: relative;
     }
 
@@ -42,23 +44,23 @@
 
     /* 헤더 영역 */
     .header {
-      margin-bottom: 20px;
-      margin-top: 10px;
+      margin-bottom: 14px;
+      margin-top: 6px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
     }
     .header-info { flex: 1; }
     .header h1 {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       color: #1d1d1f;
       letter-spacing: -0.5px;
     }
     .header p {
-      font-size: 15px;
+      font-size: 14px;
       color: #8e8e93;
-      margin-top: 4px;
+      margin-top: 3px;
       font-weight: 500;
     }
     
@@ -66,7 +68,7 @@
     .member-tags {
       display: flex;
       gap: 12px;
-      margin-top: 10px;
+      margin-top: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -96,15 +98,15 @@
       cursor: pointer;
     }
 
-    /* 경비 스크롤 박스 */
+    /* 경비 스크롤 박스 (아이폰 16 프로 등 세로 짧은 화면 대응 최적화) */
     .expense-scroll-container {
-      max-height: calc(100vh - 280px);
+      max-height: calc(100dvh - 310px);
       overflow-y: auto;
       padding-right: 4px;
       padding-bottom: 10px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
     .expense-scroll-container::-webkit-scrollbar {
       width: 4px;
@@ -118,9 +120,9 @@
       background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 0.9);
-      padding: 16px 18px;
+      padding: 14px 16px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.03);
     }
 
@@ -131,7 +133,7 @@
     }
 
     .expense-label {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: #1d1d1f;
       display: flex;
@@ -162,10 +164,10 @@
     .amount-badge {
       background: #eef3fc;
       color: #007aff;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 14px;
+      padding: 5px 12px;
+      border-radius: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -186,16 +188,16 @@
     .local-expense-box {
       background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(20px);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 0.9);
-      padding: 18px;
+      padding: 14px 16px;
     }
 
     .local-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .local-actions {
@@ -211,12 +213,12 @@
     }
 
     .local-list-scroll {
-      max-height: 180px;
+      max-height: 140px;
       overflow-y: auto;
       padding-right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
     .local-list-scroll::-webkit-scrollbar {
       width: 4px;
@@ -230,13 +232,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 0;
+      padding: 2px 0;
     }
 
     /* 하단 고정 총합 박스 */
     .sticky-total-box {
       position: fixed;
-      bottom: 92px;
+      bottom: 84px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 40px);
@@ -244,13 +246,13 @@
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 1);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      padding: 12px 18px;
+      padding: 10px 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       z-index: 998;
     }
 
@@ -261,13 +263,13 @@
     }
 
     .total-label {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #636366;
     }
 
     .total-label.highlight {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: #1d1d1f;
     }
@@ -275,10 +277,10 @@
     .total-amount-badge {
       background: #eef3fc;
       color: #007aff;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 12px;
+      padding: 3px 10px;
+      border-radius: 10px;
       transition: all 0.2s;
     }
 
@@ -300,14 +302,14 @@
     .day-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .day-card {
       background: rgba(255, 255, 255, 0.65);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 22px;
+      border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.8);
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
       overflow: hidden;
@@ -315,12 +317,12 @@
     }
 
     .day-header {
-      padding: 18px 20px;
+      padding: 16px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       color: #1d1d1f;
     }
@@ -332,7 +334,7 @@
     }
 
     .day-date-text {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
       color: #8e8e93;
     }
@@ -360,7 +362,7 @@
 
     .day-content {
       display: none;
-      padding: 0 16px 16px 16px;
+      padding: 0 14px 14px 14px;
     }
     .day-card.open .day-content { display: block; }
 
@@ -382,9 +384,9 @@
     }
 
     .voucher-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #1d1d1f;
       white-space: nowrap;
       overflow: hidden;
@@ -393,7 +395,7 @@
 
     .voucher-preview {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 14px;
       border: 1px solid rgba(0, 0, 0, 0.05);
       overflow: hidden;
       cursor: pointer;
@@ -403,17 +405,17 @@
 
     .voucher-preview img {
       width: 100%;
-      max-height: 250px;
+      max-height: 220px;
       display: block;
       object-fit: cover;
     }
 
     .comment-preview-box {
-      margin-top: 10px;
-      padding: 10px 12px;
+      margin-top: 8px;
+      padding: 8px 10px;
       background: rgba(242, 242, 247, 0.85);
-      border-radius: 12px;
-      font-size: 13px;
+      border-radius: 10px;
+      font-size: 12px;
       color: #3a3a3c;
       line-height: 1.4;
       display: flex;
@@ -438,10 +440,10 @@
     }
 
     .comment-tag {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 6px;
+      padding: 2px 5px;
+      border-radius: 5px;
       white-space: nowrap;
     }
 
@@ -452,13 +454,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 14px;
-      padding-top: 6px;
+      margin-top: 12px;
+      padding-top: 4px;
     }
 
     .action-group {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
     }
 
@@ -466,10 +468,10 @@
       background: none;
       border: none;
       color: #007aff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      padding: 4px 0;
+      padding: 2px 0;
     }
 
     .btn-edit-link { color: #8e8e93; }
@@ -484,7 +486,7 @@
       background: none;
       border: none;
       color: #8e8e93;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -493,29 +495,29 @@
       background: none;
       border: none;
       color: #007aff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       padding: 2px 4px;
     }
 
     .warning-notice {
-      font-size: 12px;
+      font-size: 11px;
       color: #ff3b30;
-      margin-top: 8px;
+      margin-top: 6px;
       line-height: 1.4;
       background: rgba(255, 59, 48, 0.08);
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
     }
 
     .place-scroll-box {
-      max-height: 220px;
+      max-height: 180px;
       overflow-y: auto;
       padding-right: 6px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       position: relative;
     }
 
@@ -535,11 +537,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 0;
+      padding: 2px 0;
     }
 
     .place-name {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: #1d1d1f;
     }
@@ -548,32 +550,32 @@
       background: rgba(0, 122, 255, 0.08);
       border: none;
       color: #007aff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 12px;
+      padding: 5px 12px;
+      border-radius: 10px;
       cursor: pointer;
     }
 
-    /* 하단 탭 네비게이션 바 */
+    /* 하단 탭 네비게이션 바 컴팩트 최적화 */
     .bottom-nav {
       position: fixed;
-      bottom: 20px;
+      bottom: 14px;
       left: 50%;
       transform: translateX(-50%);
-      width: calc(100% - 40px);
+      width: calc(100% - 32px);
       max-width: 390px;
-      height: 64px;
+      height: 58px;
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
-      border-radius: 32px;
+      border-radius: 28px;
       border: 1px solid rgba(255, 255, 255, 0.9);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 0 8px;
+      padding: 0 6px;
       z-index: 999;
     }
 
@@ -583,12 +585,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 48px;
-      border-radius: 24px;
+      height: 44px;
+      border-radius: 22px;
       cursor: pointer;
       color: #8e8e93;
       transition: all 0.2s ease;
-      gap: 3px;
+      gap: 2px;
     }
 
     .nav-tab.active {
@@ -598,8 +600,8 @@
     }
 
     .nav-tab svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       fill: none;
       stroke: currentColor;
       stroke-width: 1.8;
@@ -608,7 +610,7 @@
     }
 
     .nav-tab span {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
     }
 
@@ -623,7 +625,7 @@
       z-index: 1000;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
     }
 
     .modal-overlay.active { display: flex; }
@@ -632,16 +634,16 @@
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
-      border-radius: 24px;
+      border-radius: 22px;
       border: 1px solid rgba(255, 255, 255, 1);
-      padding: 20px;
+      padding: 18px;
       width: 100%;
       max-width: 380px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
       animation: modalPop 0.25s ease-out;
       display: flex;
       flex-direction: column;
-      max-height: 90vh;
+      max-height: 85vh;
       overflow-y: auto;
     }
 
@@ -654,13 +656,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
     }
 
     .modal-header-bar h3 {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
       color: #1d1d1f;
       white-space: nowrap;
@@ -684,37 +686,37 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-height: 70vh;
+      max-height: 65vh;
       overflow: hidden;
     }
 
     .view-modal-img {
       width: 100%;
-      max-height: 60vh;
+      max-height: 55vh;
       object-fit: contain;
-      border-radius: 14px;
+      border-radius: 12px;
       background: #000;
     }
 
     .chat-container {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 4px;
+      padding: 6px 4px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      min-height: 200px;
-      max-height: 340px;
-      margin-bottom: 12px;
+      gap: 10px;
+      min-height: 180px;
+      max-height: 300px;
+      margin-bottom: 10px;
     }
 
     .chat-bubble {
       background: rgba(242, 242, 247, 0.9);
-      border-radius: 16px;
-      padding: 10px 14px;
+      border-radius: 14px;
+      padding: 9px 12px;
       max-width: 88%;
       align-self: flex-start;
-      font-size: 14px;
+      font-size: 13px;
       color: #1d1d1f;
       line-height: 1.45;
       user-select: text;
@@ -729,8 +731,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 6px;
-      font-size: 11px;
+      margin-top: 5px;
+      font-size: 10px;
       color: #8e8e93;
       gap: 8px;
     }
@@ -738,7 +740,7 @@
     .btn-pin {
       background: none;
       border: none;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
       padding: 2px 4px;
       color: #8e8e93;
@@ -757,10 +759,10 @@
 
     .chat-input {
       flex: 1;
-      padding: 10px 14px;
+      padding: 9px 12px;
       border: 1px solid rgba(0, 0, 0, 0.12);
-      border-radius: 20px;
-      font-size: 14px;
+      border-radius: 18px;
+      font-size: 13px;
       background: rgba(255, 255, 255, 0.95);
       outline: none;
       user-select: text;
@@ -770,49 +772,49 @@
       background: #007aff;
       color: #fff;
       border: none;
-      border-radius: 20px;
-      padding: 10px 16px;
-      font-size: 14px;
+      border-radius: 18px;
+      padding: 9px 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
     }
 
     .voucher-list-container {
-      max-height: 280px;
+      max-height: 240px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .list-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 12px;
+      padding: 8px 10px;
       background: rgba(255, 255, 255, 0.6);
-      border-radius: 12px;
+      border-radius: 10px;
       border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .list-item-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex: 1;
       overflow: hidden;
     }
 
     .list-item-thumb {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
       object-fit: cover;
     }
 
     .list-item-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #1d1d1f;
       white-space: nowrap;
@@ -824,27 +826,27 @@
       background: rgba(255, 59, 48, 0.1);
       border: none;
       color: #ff3b30;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 8px;
+      padding: 5px 8px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: #8e8e93;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .form-group input, .form-group select {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      font-size: 14px;
+      border-radius: 10px;
+      font-size: 13px;
       background: rgba(255, 255, 255, 0.8);
       outline: none;
       user-select: text;
@@ -853,30 +855,30 @@
     .date-picker-box {
       background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: 14px;
-      padding: 10px;
+      border-radius: 12px;
+      padding: 8px;
     }
     .date-display-btn {
       width: 100%;
-      padding: 10px 12px;
+      padding: 8px 10px;
       background: rgba(0, 122, 255, 0.08);
       border: 1px solid rgba(0, 122, 255, 0.2);
-      border-radius: 10px;
+      border-radius: 8px;
       color: #007aff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .cal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-      padding: 0 4px;
+      margin-bottom: 6px;
+      padding: 0 2px;
     }
     .cal-header span {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: #1d1d1f;
     }
@@ -884,10 +886,10 @@
       background: none;
       border: none;
       color: #007aff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      padding: 2px 6px;
+      padding: 2px 4px;
     }
     .cal-grid {
       display: grid;
@@ -896,16 +898,16 @@
       text-align: center;
     }
     .cal-day-label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: #8e8e93;
-      padding: 4px 0;
+      padding: 2px 0;
     }
     .cal-day {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
-      padding: 8px 0;
-      border-radius: 8px;
+      padding: 6px 0;
+      border-radius: 6px;
       cursor: pointer;
       color: #1d1d1f;
       transition: all 0.15s;
@@ -923,10 +925,10 @@
     }
 
     .reorder-hint {
-      font-size: 12px;
+      font-size: 11px;
       color: #007aff;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -935,13 +937,13 @@
     .reorder-list-box {
       background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(0,0,0,0.1);
-      border-radius: 14px;
-      padding: 8px 10px;
-      max-height: 220px;
+      border-radius: 12px;
+      padding: 6px 8px;
+      max-height: 180px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       position: relative;
       touch-action: pan-y;
     }
@@ -957,8 +959,8 @@
       justify-content: space-between;
       align-items: center;
       background: #fff;
-      padding: 10px 14px;
-      border-radius: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       transition: box-shadow 0.2s, background-color 0.2s;
     }
@@ -974,7 +976,7 @@
     }
 
     .reorder-item-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: #1d1d1f;
       display: flex;
@@ -984,33 +986,33 @@
     }
 
     .reorder-item-badge {
-      font-size: 11px;
+      font-size: 10px;
       color: #007aff;
       background: rgba(0,122,255,0.1);
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 4px;
     }
 
     .drag-handle {
-      font-size: 18px;
+      font-size: 16px;
       color: #8e8e93;
       cursor: grab;
-      padding: 4px 8px;
+      padding: 2px 6px;
       touch-action: none;
     }
 
     .modal-actions {
       display: flex;
       gap: 8px;
-      margin-top: 14px;
+      margin-top: 12px;
     }
 
     .btn {
       flex: 1;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 10px;
       border: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -1019,13 +1021,30 @@
     .btn-cancel { background: rgba(120, 120, 128, 0.16); color: #1d1d1f; }
 
     .empty-voucher {
-      padding: 24px;
+      padding: 20px;
       text-align: center;
       color: #8e8e93;
       border: 1px dashed rgba(0, 0, 0, 0.15);
-      border-radius: 16px;
-      font-size: 14px;
+      border-radius: 14px;
+      font-size: 13px;
       cursor: pointer;
+    }
+
+    /* 아이폰 16 프로 등 세로 비율이 짧은 기기 미디어쿼리 최적화 */
+    @media (max-height: 850px) {
+      .app-container {
+        padding: 14px 16px 145px 16px;
+      }
+      .header {
+        margin-bottom: 10px;
+      }
+      .expense-scroll-container {
+        max-height: calc(100dvh - 270px);
+        gap: 10px;
+      }
+      .expense-card, .local-expense-box {
+        padding: 12px 14px;
+      }
     }
   </style>
 </head>
@@ -1046,12 +1065,12 @@
       <!-- 안내 컴포넌트 (접기/펼치기 기능 추가) -->
       <div style="
         background-color: #eef4ff; 
-        border-radius: 16px; 
-        padding: 14px 18px; 
+        border-radius: 14px; 
+        padding: 12px 16px; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         color: #1a1a1a;
         line-height: 1.5;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
       ">
         <div style="
           display: flex; 
@@ -1060,7 +1079,7 @@
           cursor: pointer;
         " onclick="toggleInfoBox()">
           <div style="
-            font-size: 15px; 
+            font-size: 14px; 
             font-weight: 700; 
             color: #0056b3; 
             display: flex; 
@@ -1070,15 +1089,15 @@
             <span>💡</span>
             <span>예산 & 지출 한눈에 보기</span>
           </div>
-          <span id="infoToggleBtn" style="font-size: 13px; font-weight: 600; color: #007aff;">접기 ▲</span>
+          <span id="infoToggleBtn" style="font-size: 12px; font-weight: 600; color: #007aff;">접기 ▲</span>
         </div>
 
         <div id="infoBoxContent" style="
-          margin-top: 8px; 
-          font-size: 13px; 
+          margin-top: 6px; 
+          font-size: 12px; 
           color: #334155; 
           word-break: keep-all;
-          line-height: 1.6;
+          line-height: 1.5;
         ">
           • <strong>목적 텍스트</strong>(식비, 교통비 등)를 클릭하여 초기 예산을 설정하세요.<br>
           • <strong>내역</strong>을 클릭하면 상세 가계부를 작성할 수 있습니다.<br>
@@ -1407,7 +1426,7 @@
       <div class="modal-header-bar">
         <div>
           <h3 id="chatModalHeader">바우처 댓글</h3>
-          <div id="chatModalSubHeader" style="font-size:12px; color:#8e8e93; margin-top:2px;"></div>
+          <div id="chatModalSubHeader" style="font-size:11px; color:#8e8e93; margin-top:2px;"></div>
         </div>
         <button class="btn-close-icon" onclick="closeChatModal()">✕</button>
       </div>
@@ -2718,7 +2737,7 @@
         if (c.id === commentId) {
           c.isHighlighted = !c.isHighlighted;
         } else if (c.isHighlighted) {
-          c.isHighlighted = false; // 한 번에 하나만 강조 가능
+          c.isHighlighted = false;
         }
       });
 
@@ -2837,7 +2856,7 @@
       container.innerHTML = '';
 
       if (tempScheduleOrder.length === 0) {
-        container.innerHTML = `<div style="font-size:12px; color:#8e8e93; text-align:center; padding:10px;">등록된 Day가 없습니다.</div>`;
+        container.innerHTML = `<div style="font-size:11px; color:#8e8e93; text-align:center; padding:8px;">등록된 Day가 없습니다.</div>`;
         return;
       }
 
