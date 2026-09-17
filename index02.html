@@ -1030,7 +1030,7 @@
   <div class="app-container">
     
     <!-- 1. 경비 탭 -->
-    <div id="tab-expense" class="tab-content active">
+    <div id="tab-expense" class="tab-content">
       <div class="header">
         <div class="header-info">
           <h1>경비 및 예산</h1>
@@ -1082,7 +1082,7 @@
         </div>
       </div>
 
-      <!-- 경비 리스트 컨테이너 (스크롤 박스 클래스 제거 -> 전체 스크롤 활용) -->
+      <!-- 경비 리스트 컨테이너 -->
       <div class="expense-container" id="expenseContainer">
         <!-- 사전 예약/결제 항목 -->
         <div class="expense-card">
@@ -1120,9 +1120,7 @@
               <span class="local-action-btn" onclick="openManageLocalCategoriesModal()">편집</span>
             </div>
           </div>
-          <div class="local-list" id="localCategoriesList">
-            <!-- 현지 경비 세부 항목들이 스크롤 없이 아래로 쭉 나열됨 -->
-          </div>
+          <div class="local-list" id="localCategoriesList"></div>
         </div>
 
         <!-- 여비 -->
@@ -1157,8 +1155,8 @@
       </div>
     </div>
 
-    <!-- 2. 바우처 탭 -->
-    <div id="tab-voucher" class="tab-content">
+    <!-- 2. 바우처 탭 (기본 초기 화면 설정) -->
+    <div id="tab-voucher" class="tab-content active">
       <div class="header">
         <div class="header-info">
           <h1 id="titleT1">후쿠오카, 일본</h1>
@@ -1188,11 +1186,11 @@
 
   <!-- 하단 3탭 네비게이션 바 -->
   <div class="bottom-nav">
-    <div class="nav-tab active" onclick="switchTab('tab-expense')">
+    <div class="nav-tab" onclick="switchTab('tab-expense')">
       <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       <span>경비, 예산</span>
     </div>
-    <div class="nav-tab" onclick="switchTab('tab-voucher')">
+    <div class="nav-tab active" onclick="switchTab('tab-voucher')">
       <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span>바우처</span>
     </div>
