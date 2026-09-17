@@ -718,6 +718,12 @@
       gap: 8px;
     }
 
+    .chat-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
     .btn-pin {
       background: none;
       border: none;
@@ -730,6 +736,16 @@
     .btn-pin.active {
       color: #ff9500;
       font-weight: 700;
+    }
+
+    .btn-comment-del {
+      background: none;
+      border: none;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 2px 4px;
+      color: #ff3b30;
+      font-weight: 600;
     }
 
     .chat-input-bar {
@@ -2662,7 +2678,10 @@
           <div>${c.text}</div>
           <div class="chat-meta">
             <span>${c.author || '익명'}</span>
-            <button class="btn-pin ${pinClass}" onclick="toggleHighlightComment(${c.id})">${pinText}</button>
+            <div class="chat-actions">
+              <button class="btn-pin ${pinClass}" onclick="toggleHighlightComment(${c.id})">${pinText}</button>
+              <button class="btn-comment-del" onclick="deleteComment(${c.id})">삭제</button>
+            </div>
           </div>
         `;
         container.appendChild(bubble);
@@ -2715,6 +2734,20 @@
           c.isHighlighted = false;
         }
       });
+
+      saveData();
+      renderChatMessages();
+      render();
+    }
+
+    function deleteComment(commentId) {
+      const schedule = getScheduleForMember();
+      const targetDay = schedule.find(d => d.day === editingDay);
+      if (!targetDay) return;
+      const voucher = targetDay.vouchers.find(v => v.id === activeVoucherId);
+      if (!voucher) return;
+
+      voucher.comments = voucher.comments.filter(c => c.id !== commentId);
 
       saveData();
       renderChatMessages();
