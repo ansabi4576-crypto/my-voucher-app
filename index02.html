@@ -38,6 +38,49 @@
       position: relative;
     }
 
+    /* 최상단 브랜드 로고 및 테마 전환 버튼 바 */
+    .top-brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      margin-top: 4px;
+      position: relative;
+    }
+
+    .app-logo-img {
+      height: 28px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .logo-fallback-text {
+      font-weight: 800;
+      font-size: 18px;
+      color: #007aff;
+      letter-spacing: -0.5px;
+      display: none;
+    }
+
+    /* ===== 다크모드 토글 버튼 ===== */
+    .theme-toggle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+    }
+    .theme-toggle-btn:active { transform: scale(0.92); }
+
     /* 탭 화면 제어 */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -98,7 +141,149 @@
       cursor: pointer;
     }
 
-    /* 경비 영역 컨테이너 (개별 스크롤 박스 제거 및 자연스러운 흐름 배치) */
+    /* 날씨 박스 스타일 */
+    .weather-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .weather-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .weather-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1d1d1f;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .weather-refresh-btn {
+      background: rgba(0, 122, 255, 0.1);
+      border: none;
+      color: #007aff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background-color 0.2s;
+    }
+    .weather-refresh-btn:active {
+      transform: scale(0.95);
+    }
+    .weather-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .weather-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+    .weather-temp {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1d1d1f;
+      letter-spacing: -0.5px;
+    }
+    .weather-desc {
+      font-size: 13px;
+      color: #8e8e93;
+      font-weight: 500;
+    }
+    .weather-details {
+      text-align: right;
+      font-size: 12px;
+      color: #636366;
+      line-height: 1.5;
+    }
+
+    /* 시간별 날씨 펼쳐보기 스타일 */
+    .weather-hourly-toggle {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #007aff;
+      cursor: pointer;
+      user-select: none;
+    }
+    .weather-hourly-container {
+      display: none;
+      margin-top: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 6px;
+      gap: 10px;
+      scrollbar-width: none;
+    }
+    .weather-hourly-container::-webkit-scrollbar { display: none; }
+    .weather-hourly-container.open {
+      display: flex;
+    }
+    .hourly-item {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 48px;
+      padding: 8px 6px;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 12px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .hourly-time { color: #8e8e93; font-weight: 500; margin-bottom: 4px; }
+    .hourly-icon { font-size: 18px; margin-bottom: 2px; }
+    .hourly-temp { font-weight: 700; color: #1d1d1f; }
+
+    /* 홈 섹션 구분용 타이틀 */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1d1d1f;
+      margin: 18px 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .home-member-box {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .home-member-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #8e8e93;
+      margin-bottom: 6px;
+    }
+
+    /* 경비 영역 컨테이너 */
     .expense-container {
       display: flex;
       flex-direction: column;
@@ -131,7 +316,6 @@
       gap: 6px;
     }
 
-    /* 목적 텍스트 클릭 유도 스타일 개선 */
     .clickable-purpose {
       cursor: pointer;
       color: #007aff;
@@ -202,7 +386,6 @@
       font-weight: 600;
     }
 
-    /* 현지 경비 리스트 (스크롤 없이 아래로 쭉 나열되도록 변경) */
     .local-list {
       display: flex;
       flex-direction: column;
@@ -538,7 +721,7 @@
       cursor: pointer;
     }
 
-    /* 하단 탭 네비게이션 바 컴팩트 최적화 */
+    /* 하단 네비게이션 바 */
     .bottom-nav {
       position: fixed;
       bottom: 14px;
@@ -845,6 +1028,7 @@
       border-radius: 10px;
       font-size: 13px;
       background: rgba(255, 255, 255, 0.8);
+      color: #1d1d1f;
       outline: none;
       user-select: text;
     }
@@ -1027,7 +1211,241 @@
       cursor: pointer;
     }
 
-    /* 아이폰 16 프로 등 화면 최적화 */
+    /* 안내 컴포넌트 */
+    .info-hint-box {
+      background-color: #eef4ff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      transition: background-color 0.25s ease;
+    }
+    .info-hint-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .info-hint-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0056b3;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .info-hint-toggle { font-size: 12px; font-weight: 600; color: #007aff; }
+    .info-hint-body {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #334155;
+      word-break: keep-all;
+      line-height: 1.5;
+    }
+
+    /* ===== 다크모드 스타일 ===== */
+    body.dark-mode {
+      background: linear-gradient(135deg, #0b0b0d 0%, #000000 100%);
+      color: #f5f5f7;
+    }
+
+    body.dark-mode .theme-toggle-btn {
+      background: rgba(44, 44, 46, 0.8);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    body.dark-mode .app-logo-img {
+      filter: invert(1) grayscale(1) brightness(200%);
+    }
+
+    body.dark-mode .logo-fallback-text {
+      color: #4dabff;
+    }
+
+    body.dark-mode .header h1,
+    body.dark-mode .header-info h1,
+    body.dark-mode .modal-header-bar h3,
+    body.dark-mode .cal-header span,
+    body.dark-mode .cal-day,
+    body.dark-mode .list-item-title,
+    body.dark-mode .reorder-item-title,
+    body.dark-mode .place-name,
+    body.dark-mode .expense-label,
+    body.dark-mode .local-header .expense-label,
+    body.dark-mode .voucher-title,
+    body.dark-mode .chat-bubble,
+    body.dark-mode .btn-cancel,
+    body.dark-mode .day-header,
+    body.dark-mode .weather-title,
+    body.dark-mode .weather-temp,
+    body.dark-mode .hourly-temp,
+    body.dark-mode .section-title {
+      color: #f5f5f7;
+    }
+
+    body.dark-mode .header p,
+    body.dark-mode .member-tag,
+    body.dark-mode .btn-detail-link,
+    body.dark-mode .day-date-text,
+    body.dark-mode .day-header .icon,
+    body.dark-mode .btn-edit-link,
+    body.dark-mode .btn-nav,
+    body.dark-mode .drag-handle,
+    body.dark-mode .btn-close-icon,
+    body.dark-mode .chat-meta,
+    body.dark-mode .btn-pin,
+    body.dark-mode .form-group label,
+    body.dark-mode .cal-day-label,
+    body.dark-mode .empty-voucher,
+    body.dark-mode .amount-badge .arrow,
+    body.dark-mode .local-action-btn,
+    body.dark-mode .weather-desc,
+    body.dark-mode .weather-details,
+    body.dark-mode .hourly-time,
+    body.dark-mode .home-member-label {
+      color: #98989d;
+    }
+
+    body.dark-mode .btn-header-edit,
+    body.dark-mode .clickable-purpose,
+    body.dark-mode .amount-badge,
+    body.dark-mode .total-amount-badge,
+    body.dark-mode .btn-link,
+    body.dark-mode .btn-text-action,
+    body.dark-mode .btn-map-view,
+    body.dark-mode .date-display-btn,
+    body.dark-mode .cal-btn,
+    body.dark-mode .cal-day.in-range,
+    body.dark-mode .reorder-hint,
+    body.dark-mode .reorder-item-badge,
+    body.dark-mode .weather-refresh-btn,
+    body.dark-mode .weather-hourly-toggle {
+      color: #4dabff;
+    }
+
+    body.dark-mode .weather-refresh-btn {
+      background: rgba(10, 132, 255, 0.2);
+    }
+
+    body.dark-mode .weather-hourly-toggle {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .hourly-item {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    body.dark-mode .member-tag.active { color: #f5f5f7; }
+
+    body.dark-mode .btn-header-edit {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    body.dark-mode .info-hint-box { background-color: rgba(10, 132, 255, 0.15); }
+    body.dark-mode .info-hint-title { color: #64b5ff; }
+    body.dark-mode .info-hint-body { color: #c7d2e0; }
+
+    body.dark-mode .expense-card,
+    body.dark-mode .local-expense-box,
+    body.dark-mode .weather-card,
+    body.dark-mode .home-member-box {
+      background: rgba(44, 44, 46, 0.75);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .amount-badge { background: rgba(10, 132, 255, 0.18); }
+    body.dark-mode .amount-badge.negative { background: rgba(255, 69, 58, 0.2); color: #ff6961; }
+    body.dark-mode .total-amount-badge.negative { background: rgba(255, 69, 58, 0.2); color: #ff6961; }
+
+    body.dark-mode .sticky-total-box {
+      background: rgba(28, 28, 30, 0.92);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    body.dark-mode .total-label { color: #98989d; }
+    body.dark-mode .total-label.highlight { color: #f5f5f7; }
+    body.dark-mode .total-amount-badge { background: rgba(10, 132, 255, 0.18); }
+    body.dark-mode .total-amount-badge.used { background: rgba(255, 255, 255, 0.1); color: #d1d1d6; }
+
+    body.dark-mode .day-card {
+      background: rgba(44, 44, 46, 0.55);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    body.dark-mode .day-card.open {
+      background: rgba(44, 44, 46, 0.8);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    body.dark-mode .voucher-preview { background: rgba(255, 255, 255, 0.06); }
+
+    body.dark-mode .comment-preview-box {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.06);
+      color: #d1d1d6;
+    }
+    body.dark-mode .comment-preview-box.highlighted {
+      background: rgba(255, 214, 10, 0.15);
+      border-color: rgba(255, 214, 10, 0.35);
+    }
+    body.dark-mode .comment-tag.recent { background: rgba(255, 255, 255, 0.14); color: #aeaeb2; }
+
+    body.dark-mode .warning-notice { background: rgba(255, 69, 58, 0.15); }
+
+    body.dark-mode .place-scroll-box::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.06); }
+    body.dark-mode .place-scroll-box::-webkit-scrollbar-thumb { background: #98989d; }
+
+    body.dark-mode .btn-map-view { background: rgba(10, 132, 255, 0.2); }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(28, 28, 30, 0.85);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    body.dark-mode .nav-tab.active {
+      background: #2c2c2e;
+      color: #f5f5f7;
+    }
+
+    body.dark-mode .modal-card {
+      background: rgba(28, 28, 30, 0.92);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    body.dark-mode .modal-header-bar { border-color: rgba(255, 255, 255, 0.12); }
+
+    body.dark-mode .chat-bubble { background: rgba(255, 255, 255, 0.08); }
+    body.dark-mode .chat-bubble.highlighted {
+      background: rgba(255, 214, 10, 0.18);
+      border-color: rgba(255, 214, 10, 0.4);
+    }
+    body.dark-mode .chat-input {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #f5f5f7;
+    }
+
+    body.dark-mode .list-item { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.08); }
+    body.dark-mode .btn-item-del { background: rgba(255, 69, 58, 0.2); }
+
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group select,
+    body.dark-mode .date-picker-box,
+    body.dark-mode .reorder-list-box {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #f5f5f7;
+    }
+
+    body.dark-mode .date-display-btn { background: rgba(10, 132, 255, 0.2); border-color: rgba(10, 132, 255, 0.4); }
+    body.dark-mode .cal-day.in-range { background: rgba(10, 132, 255, 0.25); }
+
+    body.dark-mode .reorder-item {
+      background: #2c2c2e;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    body.dark-mode .reorder-item.dragging { background: rgba(10, 132, 255, 0.18); }
+    body.dark-mode .reorder-item-badge { background: rgba(10, 132, 255, 0.2); }
+
+    body.dark-mode .btn-cancel { background: rgba(255, 255, 255, 0.14); }
+    body.dark-mode .empty-voucher { border-color: rgba(255, 255, 255, 0.15); }
+
     @media (max-height: 850px) {
       .app-container {
         padding: 14px 16px 145px 16px;
@@ -1045,7 +1463,74 @@
 
   <div class="app-container">
     
-    <!-- 1. 경비 탭 -->
+    <!-- 최상단 브랜드 로고 및 다크모드 버튼 바 -->
+    <div class="top-brand-bar">
+      <img src="shortcut_logo.png" alt="ShortCut Logo" class="app-logo-img" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span class="logo-fallback-text">ShortCut</span>
+      <button id="darkModeToggle" class="theme-toggle-btn" onclick="toggleDarkMode()" title="다크모드 전환">☀️</button>
+    </div>
+
+    <!-- 0. 홈 탭 -->
+    <div id="tab-home" class="tab-content active">
+      <div class="header">
+        <div class="header-info">
+          <h1 id="homeTitleT1">후쿠오카, 일본</h1>
+          <p id="homeTitleT2">12월 12일~16일 일정</p>
+        </div>
+      </div>
+
+      <!-- 실시간 날씨 박스 -->
+      <div class="weather-card">
+        <div class="weather-header">
+          <span class="weather-title">
+            <span>🌤️</span>
+            <span>현지 실시간 날씨</span>
+          </span>
+          <button class="weather-refresh-btn" onclick="refreshHomeWeather()">
+            새로고침
+          </button>
+        </div>
+        <div id="weatherCardBody">
+          <div style="font-size:13px; color:#8e8e93; text-align:center; padding:10px 0;">날씨 정보를 불러오는 중...</div>
+        </div>
+      </div>
+
+      <!-- 동행자 인원 선택 태그 박스 -->
+      <div class="home-member-box">
+        <div class="home-member-label">동행자 선택</div>
+        <div class="member-tags" id="homeMemberTagsContainer"></div>
+      </div>
+
+      <!-- 일자별 바우처 박스 목록 -->
+      <div class="section-title">
+        <span></span>
+        <span>일자별 바우처</span>
+      </div>
+      <div class="day-list" id="homeVoucherDayList"></div>
+
+      <!-- 일자별 저장된 장소 박스 목록 -->
+      <div class="section-title" style="margin-top: 24px;">
+        <span></span>
+        <span>일자별 저장된 장소</span>
+      </div>
+      <div class="day-list" id="homeSavedDayList"></div>
+    </div>
+
+    <!-- 1. 바우처 탭 -->
+    <div id="tab-voucher" class="tab-content">
+      <div class="header">
+        <div class="header-info">
+          <h1 id="titleT1">후쿠오카, 일본</h1>
+          <p id="titleT2">12월 12일~16일 일정</p>
+          <div class="member-tags" id="memberTagsContainer"></div>
+        </div>
+        <button class="btn-header-edit" onclick="openHeaderEditModal()">편집</button>
+      </div>
+
+      <div class="day-list" id="dayList"></div>
+    </div>
+
+    <!-- 2. 경비 탭 -->
     <div id="tab-expense" class="tab-content">
       <div class="header">
         <div class="header-info">
@@ -1056,42 +1541,16 @@
       </div>
 
       <!-- 안내 컴포넌트 -->
-      <div style="
-        background-color: #eef4ff; 
-        border-radius: 14px; 
-        padding: 12px 16px; 
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: #1a1a1a;
-        line-height: 1.5;
-        margin-bottom: 12px;
-      ">
-        <div style="
-          display: flex; 
-          justify-content: space-between; 
-          align-items: center;
-          cursor: pointer;
-        " onclick="toggleInfoBox()">
-          <div style="
-            font-size: 14px; 
-            font-weight: 700; 
-            color: #0056b3; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px;
-          ">
+      <div class="info-hint-box">
+        <div class="info-hint-header" onclick="toggleInfoBox()">
+          <div class="info-hint-title">
             <span>💡</span>
             <span>예산 & 지출 한눈에 보기</span>
           </div>
-          <span id="infoToggleBtn" style="font-size: 12px; font-weight: 600; color: #007aff;">접기 ▲</span>
+          <span id="infoToggleBtn" class="info-hint-toggle">접기 ▲</span>
         </div>
 
-        <div id="infoBoxContent" style="
-          margin-top: 6px; 
-          font-size: 12px; 
-          color: #334155; 
-          word-break: keep-all;
-          line-height: 1.5;
-        ">
+        <div id="infoBoxContent" class="info-hint-body">
           • <strong>목적 텍스트</strong>(식비, 교통비 등)를 클릭하여 초기 예산을 설정하세요.<br>
           • <strong>내역</strong>을 클릭하면 상세 가계부를 작성할 수 있습니다.<br>
           • 우측 <strong>금액 박스</strong> 터치 시 엔화(¥)와 원화(₩) 표시가 바로 교차 전환됩니다.
@@ -1171,20 +1630,6 @@
       </div>
     </div>
 
-    <!-- 2. 바우처 탭 (기본 초기 화면 설정) -->
-    <div id="tab-voucher" class="tab-content active">
-      <div class="header">
-        <div class="header-info">
-          <h1 id="titleT1">후쿠오카, 일본</h1>
-          <p id="titleT2">12월 12일~16일 일정</p>
-          <div class="member-tags" id="memberTagsContainer"></div>
-        </div>
-        <button class="btn-header-edit" onclick="openHeaderEditModal()">편집</button>
-      </div>
-
-      <div class="day-list" id="dayList"></div>
-    </div>
-
     <!-- 3. 저장 탭 -->
     <div id="tab-saved" class="tab-content">
       <div class="header">
@@ -1200,15 +1645,19 @@
 
   </div>
 
-  <!-- 하단 3탭 네비게이션 바 -->
+  <!-- 하단 4탭 네비게이션 바 -->
   <div class="bottom-nav">
+    <div class="nav-tab active" onclick="switchTab('tab-home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>홈</span>
+    </div>
+    <div class="nav-tab" onclick="switchTab('tab-voucher')">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>바우처</span>
+    </div>
     <div class="nav-tab" onclick="switchTab('tab-expense')">
       <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       <span>경비, 예산</span>
-    </div>
-    <div class="nav-tab active" onclick="switchTab('tab-voucher')">
-      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      <span>바우처</span>
     </div>
     <div class="nav-tab" onclick="switchTab('tab-saved')">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
@@ -1225,7 +1674,7 @@
       </div>
       <div class="form-group">
         <label>초기 설정 예산 금액</label>
-        <input type="number" id="inputInitialBudget" placeholder="0">
+        <input type="text" inputmode="numeric" id="inputInitialBudget" placeholder="0" oninput="formatCurrencyInput(this)">
       </div>
       <div class="form-group">
         <label>기본 화폐 선택</label>
@@ -1301,7 +1750,7 @@
       <div class="form-group" style="display:flex; gap:8px;">
         <div style="flex:2;">
           <label>사용 금액</label>
-          <input type="number" id="inputLogAmount" placeholder="0">
+          <input type="text" inputmode="numeric" id="inputLogAmount" placeholder="0" oninput="formatCurrencyInput(this)">
         </div>
         <div style="flex:1;">
           <label>화폐</label>
@@ -1331,7 +1780,7 @@
       </div>
       <div class="form-group">
         <label>초기 예산 금액</label>
-        <input type="number" id="inputLocalCatAmount" placeholder="0">
+        <input type="text" inputmode="numeric" id="inputLocalCatAmount" placeholder="0" oninput="formatCurrencyInput(this)">
       </div>
       <div class="form-group">
         <label>기본 화폐</label>
@@ -1470,6 +1919,52 @@
   <script>
     const IMGBB_API_KEY = "a75bc23c30b5908364dd0229685c42b7";
 
+    /* 주요 여행 도시 한글-영문 매핑 (Open-Meteo 지오코딩 호환용) */
+    const CITY_NAME_MAP = {
+      '교토': 'Kyoto',
+      '교토시': 'Kyoto',
+      '도쿄': 'Tokyo',
+      '오사카': 'Osaka',
+      '후쿠오카': 'Fukuoka',
+      '삿포로': 'Sapporo',
+      '오키나와': 'Okinawa',
+      '나고야': 'Nagoya',
+      '유후인': 'Yufu',
+      '벳푸': 'Beppu',
+      '하코네': 'Hakone',
+      '고베': 'Kobe',
+      '나라': 'Nara',
+      '요코하마': 'Yokohama',
+      '다낭': 'Da Nang',
+      '나트랑': 'Nha Trang',
+      '푸꾸옥': 'Phu Quoc',
+      '하노이': 'Hanoi',
+      '호치민': 'Ho Chi Minh City',
+      '방콕': 'Bangkok',
+      '푸켓': 'Phuket',
+      '치앙마이': 'Chiang Mai',
+      '타이베이': 'Taipei',
+      '가오슝': 'Kaohsiung',
+      '홍콩': 'Hong Kong',
+      '마카오': 'Macau',
+      '싱가포르': 'Singapore',
+      '발리': 'Bali',
+      '세부': 'Cebu',
+      '보라카이': 'Boracay',
+      '괌': 'Guam',
+      '사이판': 'Saipan',
+      '하와이': 'Honolulu',
+      '파리': 'Paris',
+      '런던': 'London',
+      '로마': 'Rome',
+      '프라하': 'Prague',
+      '바르셀로나': 'Barcelona',
+      '뉴욕': 'New York',
+      'LA': 'Los Angeles',
+      '로스앤젤레스': 'Los Angeles',
+      '시드니': 'Sydney'
+    };
+
     const firebaseConfig = {
       apiKey: "AIzaSyBCAyr_wQVHrB8w6mFFT_IJuBzf7TSnk9c",
       authDomain: "banks-50585.firebaseapp.com",
@@ -1545,7 +2040,57 @@
     let activeVoucherId = null;
     let activeExpenseKey = null;
 
-    // 안내 박스 접기/펼치기 토글 함수
+    let homeVoucherOpenState = {};
+    let homeSavedOpenState = {};
+    let isHourlyOpen = false;
+
+    /* 금액 포맷팅 헬퍼 함수 (천 단위 쉼표) */
+    function formatNumber(num) {
+      if (num === null || num === undefined || isNaN(num)) return '0';
+      return Number(num).toLocaleString('ko-KR');
+    }
+
+    function parseFormattedNumber(str) {
+      if (!str) return 0;
+      const cleanStr = String(str).replace(/,/g, '').trim();
+      const parsed = parseFloat(cleanStr);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
+    function formatCurrencyInput(input) {
+      let val = input.value.replace(/[^0-9]/g, '');
+      if (!val) {
+        input.value = '';
+        return;
+      }
+      input.value = Number(val).toLocaleString('ko-KR');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeQuotes(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const btn = document.getElementById('darkModeToggle');
+      if (document.body.classList.contains('dark-mode')) {
+        btn.innerText = '🌙';
+      } else {
+        btn.innerText = '☀️';
+      }
+    }
+
     function toggleInfoBox() {
       const content = document.getElementById('infoBoxContent');
       const btn = document.getElementById('infoToggleBtn');
@@ -1575,15 +2120,20 @@
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
 
-      document.getElementById(tabId).classList.add('active');
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) targetTab.classList.add('active');
 
-      const tabs = ['tab-expense', 'tab-voucher', 'tab-saved'];
+      const tabs = ['tab-home', 'tab-voucher', 'tab-expense', 'tab-saved'];
       const index = tabs.indexOf(tabId);
       if (index !== -1) {
         document.querySelectorAll('.nav-tab')[index].classList.add('active');
       }
 
-      if (tabId === 'tab-saved') {
+      if (tabId === 'tab-home') {
+        renderHomeTab();
+      } else if (tabId === 'tab-voucher') {
+        render();
+      } else if (tabId === 'tab-saved') {
         renderSavedPlaces();
       } else if (tabId === 'tab-expense') {
         renderExpenseTab();
@@ -1605,7 +2155,7 @@
       }
     }
 
-    window.addEventListener('popstate', (e) => {
+    window.addEventListener('popstate', () => {
       if (activeModalId) {
         document.getElementById(activeModalId).classList.remove('active');
         activeModalId = null;
@@ -1623,6 +2173,7 @@
             endDate: parseValidDate(val.endDate, new Date(2026, 11, 16))
           };
           renderHeader();
+          renderHomeTab();
         }
       });
 
@@ -1631,6 +2182,7 @@
         if (val) {
           userSchedules = normalizeSchedules(val);
           render();
+          renderHomeTab();
         }
       });
 
@@ -1639,6 +2191,7 @@
         if (val) {
           savedPlaces = val;
           renderSavedPlaces();
+          renderHomeTab();
         }
       });
 
@@ -1728,368 +2281,386 @@
       return schedules;
     }
 
-    function getCurMemberExpense() {
-      const m = travelInfo.currentMember;
-      if (!expenseData[m]) {
-        expenseData[m] = {
-          flight: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
-          lodging: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
-          extra: { initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
-          localCategories: [
-            { id: 'cat_1', name: '식비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
-            { id: 'cat_2', name: '교통비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
-            { id: 'cat_3', name: '투어, 티켓', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
-            { id: 'cat_4', name: '쇼핑', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
-            { id: 'cat_5', name: '가챠', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] }
-          ]
-        };
-      }
-      return expenseData[m];
+    /* -------------------------------------------------------------------------- */
+    /*                             실시간 날씨 로직                             */
+    /* -------------------------------------------------------------------------- */
+
+    function refreshHomeWeather() {
+      fetchWeatherForLocation(travelInfo.t1);
     }
 
-    function getItemUsedSum(itemObj) {
-      const logs = itemObj.logs || [];
-      return logs.reduce((acc, log) => {
-        if (log.currency === itemObj.currency) {
-          return acc + log.amount;
+    function toggleHourlyWeather() {
+      isHourlyOpen = !isHourlyOpen;
+      const container = document.getElementById('weatherHourlyContainer');
+      const btn = document.getElementById('weatherHourlyToggleBtn');
+      if (container) {
+        if (isHourlyOpen) {
+          container.classList.add('open');
+          if (btn) btn.innerText = '시간별 날씨 접기 ▲';
         } else {
-          return acc + (itemObj.currency === 'KRW' ? convertToKRW(log.amount, 'JPY') : log.amount / jpyToKrwRate);
-        }
-      }, 0);
-    }
-
-    function getItemUsedSumKRW(itemObj) {
-      const logs = itemObj.logs || [];
-      return logs.reduce((acc, log) => convertToKRW(log.amount, log.currency) + acc, 0);
-    }
-
-    function getRemainingAmount(itemObj) {
-      const initial = itemObj.initialAmount || 0;
-      const usedSum = getItemUsedSum(itemObj);
-      return initial - Math.round(usedSum);
-    }
-
-    function toggleItemDisplayCurrency(key) {
-      const exp = getCurMemberExpense();
-      let targetObj = null;
-      if (['flight', 'lodging', 'extra'].includes(key)) {
-        targetObj = exp[key];
-      } else {
-        targetObj = exp.localCategories.find(c => c.id === key);
-      }
-
-      if (targetObj) {
-        targetObj.displayCurrency = (targetObj.displayCurrency === 'KRW') ? 'JPY' : 'KRW';
-        saveData();
-        renderExpenseTab();
-      }
-    }
-
-    function toggleTotalDisplayCurrency() {
-      totalDisplayCurrency = (totalDisplayCurrency === 'KRW') ? 'JPY' : 'KRW';
-      renderExpenseTab();
-    }
-
-    function renderExpenseTab() {
-      const exp = getCurMemberExpense();
-
-      renderExpenseItem('flight', exp.flight);
-      renderExpenseItem('lodging', exp.lodging);
-      renderExpenseItem('extra', exp.extra);
-
-      const localListContainer = document.getElementById('localCategoriesList');
-      localListContainer.innerHTML = '';
-
-      exp.localCategories.forEach(cat => {
-        const remaining = getRemainingAmount(cat);
-        const displayVal = formatCurrencyVal(remaining, cat.currency, cat.displayCurrency);
-        const isNegative = remaining < 0;
-        
-        const div = document.createElement('div');
-        div.className = 'local-item';
-        div.innerHTML = `
-          <div class="expense-label">
-            <span class="clickable-purpose" onclick="openBudgetModal('${cat.id}')" title="터치하여 초기 예산 설정">${cat.name}</span>
-            <span class="btn-detail-link" onclick="openExpenseDetailModal('${cat.id}')">내역</span>
-          </div>
-          <div class="amount-badge ${isNegative ? 'negative' : ''}" onclick="toggleItemDisplayCurrency('${cat.id}')">
-            <span>${displayVal}</span>
-            <span class="arrow">⇄</span>
-          </div>
-        `;
-        localListContainer.appendChild(div);
-      });
-
-      let totalRemainingKRW = 0;
-      let totalUsedKRW = 0;
-
-      const extraRem = getRemainingAmount(exp.extra);
-      totalRemainingKRW += convertToKRW(extraRem, exp.extra.currency);
-      totalUsedKRW += getItemUsedSumKRW(exp.extra);
-
-      exp.localCategories.forEach(cat => {
-        const rem = getRemainingAmount(cat);
-        totalRemainingKRW += convertToKRW(rem, cat.currency);
-        totalUsedKRW += getItemUsedSumKRW(cat);
-      });
-
-      const totalBadge = document.getElementById('totalAmountBadge');
-      if (totalRemainingKRW < 0) {
-        totalBadge.classList.add('negative');
-      } else {
-        totalBadge.classList.remove('negative');
-      }
-
-      if (totalDisplayCurrency === 'KRW') {
-        document.getElementById('totalAmountText').innerText = `${Math.round(totalRemainingKRW).toLocaleString()}원`;
-      } else {
-        const totalRemainingJPY = Math.round(totalRemainingKRW / jpyToKrwRate);
-        document.getElementById('totalAmountText').innerText = `${totalRemainingJPY.toLocaleString()}엔`;
-      }
-
-      document.getElementById('totalUsedAmountText').innerText = `${Math.round(totalUsedKRW).toLocaleString()}원`;
-    }
-
-    function convertToKRW(amount, currency) {
-      if (currency === 'KRW') return amount;
-      return amount * jpyToKrwRate;
-    }
-
-    function formatCurrencyVal(amount, nativeCurrency, displayCurrency) {
-      if (nativeCurrency === displayCurrency) {
-        const unit = nativeCurrency === 'KRW' ? '원' : '엔';
-        return `${amount.toLocaleString()}${unit}`;
-      } else {
-        if (displayCurrency === 'KRW') {
-          const converted = Math.round(amount * jpyToKrwRate);
-          return `${converted.toLocaleString()}원`;
-        } else {
-          const converted = Math.round(amount / jpyToKrwRate);
-          return `${converted.toLocaleString()}엔`;
+          container.classList.remove('open');
+          if (btn) btn.innerText = '시간별 날씨 펼쳐보기 ▼';
         }
       }
     }
 
-    function renderExpenseItem(key, item) {
-      const el = document.getElementById(`amount-${key}`);
-      const badge = document.getElementById(`badge-${key}`);
-      if (el) {
-        const remaining = getRemainingAmount(item);
-        el.innerText = formatCurrencyVal(remaining, item.currency, item.displayCurrency);
-        if (badge) {
-          if (remaining < 0) badge.classList.add('negative');
-          else badge.classList.remove('negative');
+    async function fetchWeatherForLocation(locationName) {
+      const weatherCard = document.getElementById('weatherCardBody');
+      if (!weatherCard) return;
+
+      let rawQuery = locationName ? locationName.split(',')[0].trim() : '후쿠오카';
+      let searchTerm = CITY_NAME_MAP[rawQuery] || rawQuery;
+      
+      try {
+        weatherCard.innerHTML = `<div style="font-size:13px; color:#8e8e93; text-align:center; padding:10px 0;">🌤️ 실시간 날씨 정보를 가져오는 중...</div>`;
+
+        let geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=1&language=ko&format=json`);
+        let geoData = await geoRes.json();
+
+        if ((!geoData || !geoData.results || geoData.results.length === 0) && searchTerm !== rawQuery) {
+          geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(rawQuery)}&count=1&language=ko&format=json`);
+          geoData = await geoRes.json();
+        }
+
+        if (!geoData || !geoData.results || geoData.results.length === 0) {
+          weatherCard.innerHTML = `<div style="font-size:13px; color:#8e8e93; text-align:center; padding:10px 0;">'${rawQuery}' 위치 정보를 찾을 수 없습니다.</div>`;
+          return;
+        }
+
+        const loc = geoData.results[0];
+        const lat = loc.latitude;
+        const lon = loc.longitude;
+        const resolvedName = rawQuery;
+
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&timezone=auto`);
+        const wData = await weatherRes.json();
+
+        if (!wData || !wData.current_weather) {
+          weatherCard.innerHTML = `<div style="font-size:13px; color:#8e8e93; text-align:center; padding:10px 0;">날씨 데이터를 가져올 수 없습니다.</div>`;
+          return;
+        }
+
+        const cw = wData.current_weather;
+        const temp = Math.round(cw.temperature);
+        const code = cw.weathercode;
+        const wind = cw.windspeed;
+
+        const weatherMeta = getWeatherInfoByCode(code);
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+        let hourlyHTML = '';
+        if (wData.hourly && wData.hourly.time && wData.hourly.temperature_2m) {
+          const times = wData.hourly.time;
+          const temps = wData.hourly.temperature_2m;
+          const codes = wData.hourly.weathercode || [];
+          
+          const currentHourStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}`;
+          let startIndex = times.findIndex(t => t.startsWith(currentHourStr));
+          if (startIndex === -1) startIndex = 0;
+
+          const hourlyItems = [];
+          for (let i = startIndex; i < Math.min(startIndex + 24, times.length); i++) {
+            const tStr = times[i];
+            const hourNum = parseInt(tStr.split('T')[1].split(':')[0], 10);
+            const label = (i === startIndex) ? '지금' : `${hourNum}시`;
+            const hTemp = Math.round(temps[i]);
+            const hCode = codes[i] !== undefined ? codes[i] : 0;
+            const hMeta = getWeatherInfoByCode(hCode);
+
+            hourlyItems.push(`
+              <div class="hourly-item">
+                <span class="hourly-time">${label}</span>
+                <span class="hourly-icon">${hMeta.icon}</span>
+                <span class="hourly-temp">${hTemp}°</span>
+              </div>
+            `);
+          }
+          hourlyHTML = hourlyItems.join('');
+        }
+
+        weatherCard.innerHTML = `
+          <div class="weather-body">
+            <div class="weather-main">
+              <span class="weather-icon">${weatherMeta.icon}</span>
+              <div>
+                <div class="weather-temp">${temp}°C</div>
+                <div class="weather-desc">${resolvedName} · ${weatherMeta.text}</div>
+              </div>
+            </div>
+            <div class="weather-details">
+              <div>풍속 ${wind} km/h</div>
+              <div style="font-size:10px; color:#8e8e93; margin-top:2px;">${timeStr} 업데이트</div>
+            </div>
+          </div>
+          <div class="weather-hourly-toggle" id="weatherHourlyToggleBtn" onclick="toggleHourlyWeather()">
+            ${isHourlyOpen ? '시간별 날씨 접기 ▲' : '시간별 날씨 펼쳐보기 ▼'}
+          </div>
+          <div class="weather-hourly-container ${isHourlyOpen ? 'open' : ''}" id="weatherHourlyContainer">
+            ${hourlyHTML}
+          </div>
+        `;
+      } catch (err) {
+        console.warn('Weather fetch error:', err);
+        weatherCard.innerHTML = `<div style="font-size:13px; color:#8e8e93; text-align:center; padding:10px 0;">날씨 정보를 불러오지 못했습니다.</div>`;
+      }
+    }
+
+    function getWeatherInfoByCode(code) {
+      switch (code) {
+        case 0: return { icon: '☀️', text: '맑음' };
+        case 1:
+        case 2: return { icon: '⛅', text: '구름 조금' };
+        case 3: return { icon: '☁️', text: '흐림' };
+        case 45:
+        case 48: return { icon: '🌫️', text: '안개' };
+        case 51: case 53: case 55: case 56: case 57: return { icon: '🌦️', text: '이슬비' };
+        case 61: case 63: case 65: case 66: case 67: return { icon: '🌧️', text: '비' };
+        case 71: case 73: case 75: case 77: return { icon: '❄️', text: '눈' };
+        case 80: case 81: case 82: return { icon: '🌧️', text: '소나기' };
+        case 85: case 86: return { icon: '🌨️', text: '눈보라' };
+        case 95: case 96: case 99: return { icon: '🌩️', text: '뇌우' };
+        default: return { icon: '🌡️', text: '보통' };
+      }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                홈 탭 렌더링                               */
+    /* -------------------------------------------------------------------------- */
+
+    function getFormattedDate(dayNum) {
+      if (!travelInfo.startDate) return '';
+      const d = new Date(travelInfo.startDate);
+      d.setDate(d.getDate() + (dayNum - 1));
+      const m = d.getMonth() + 1;
+      const date = d.getDate();
+      const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
+      return `${m}월 ${date}일 (${dayOfWeek})`;
+    }
+
+    function getTodayDayNumber() {
+      if (!travelInfo.startDate) return 1;
+      const now = new Date();
+      const todayYear = now.getFullYear();
+      const todayMonth = now.getMonth();
+      const todayDate = now.getDate();
+
+      const start = new Date(travelInfo.startDate);
+      const totalDays = getTripDaysCount();
+
+      for (let d = 1; d <= totalDays; d++) {
+        const curDate = new Date(start);
+        curDate.setDate(start.getDate() + (d - 1));
+        if (
+          curDate.getFullYear() === todayYear &&
+          curDate.getMonth() === todayMonth &&
+          curDate.getDate() === todayDate
+        ) {
+          return d;
         }
       }
+
+      const startCopy = new Date(start);
+      startCopy.setHours(0, 0, 0, 0);
+      const nowCopy = new Date(now);
+      nowCopy.setHours(0, 0, 0, 0);
+
+      if (nowCopy < startCopy) return 1;
+      return totalDays;
     }
 
-    function openBudgetModal(key) {
-      activeExpenseKey = key;
-      const targetObj = getActiveExpenseObject();
+    function toggleHomeVoucherDay(dayNum) {
+      const current = homeVoucherOpenState[dayNum] !== false;
+      homeVoucherOpenState[dayNum] = !current;
+      renderHomeTab();
+    }
 
-      let title = '초기 예산 설정';
-      const exp = getCurMemberExpense();
-      if (key === 'flight') title = '비행기 초기 금액 (사전결제)';
-      else if (key === 'lodging') title = '숙소 초기 금액 (사전결제)';
-      else if (key === 'extra') title = '여비 초기 예산';
-      else {
-        const cat = exp.localCategories.find(c => c.id === key);
-        if (cat) title = `${cat.name} 초기 예산 설정`;
+    function toggleHomeSavedDay(dayNum) {
+      const current = homeSavedOpenState[dayNum] !== false;
+      homeSavedOpenState[dayNum] = !current;
+      renderHomeTab();
+    }
+
+    function renderHomeTab() {
+      document.getElementById('homeTitleT1').innerText = travelInfo.t1 || '여행지 미정';
+      document.getElementById('homeTitleT2').innerText = travelInfo.t2 || '일정 미정';
+
+      fetchWeatherForLocation(travelInfo.t1);
+
+      const homeTagsContainer = document.getElementById('homeMemberTagsContainer');
+      if (homeTagsContainer) {
+        homeTagsContainer.innerHTML = '';
+        (travelInfo.members || []).forEach(member => {
+          const isActive = member === travelInfo.currentMember;
+          const span = document.createElement('span');
+          span.className = `member-tag ${isActive ? 'active' : ''}`;
+          span.innerText = member;
+          span.onclick = () => selectMember(member);
+          homeTagsContainer.appendChild(span);
+        });
       }
 
-      document.getElementById('budgetModalTitle').innerText = title;
-      document.getElementById('inputInitialBudget').value = targetObj.initialAmount || 0;
-      document.getElementById('selectBudgetCurrency').value = targetObj.currency || 'JPY';
+      const schedule = getScheduleForMember();
+      const todayDay = getTodayDayNumber();
 
-      openModalWithHistory('budgetModal');
-    }
+      // 1. 일자별 바우처 박스 (오늘 날짜 당일 박스 1개만 노출)
+      const homeVoucherContainer = document.getElementById('homeVoucherDayList');
+      if (homeVoucherContainer) {
+        homeVoucherContainer.innerHTML = '';
+        const filteredSchedule = schedule.filter(item => item.day === todayDay);
 
-    function closeBudgetModal() {
-      closeModalWithHistory('budgetModal');
-      activeExpenseKey = null;
-    }
+        filteredSchedule.forEach((item) => {
+          const isOpen = homeVoucherOpenState[item.day] !== false;
+          const card = document.createElement('div');
+          card.className = `day-card ${isOpen ? 'open' : ''}`;
 
-    function saveInitialBudget() {
-      const amount = parseFloat(document.getElementById('inputInitialBudget').value) || 0;
-      const currency = document.getElementById('selectBudgetCurrency').value;
+          const dateStr = getFormattedDate(item.day);
+          let contentHTML = '';
 
-      const targetObj = getActiveExpenseObject();
-      if (targetObj) {
-        targetObj.initialAmount = amount;
-        targetObj.currency = currency;
-        targetObj.displayCurrency = currency;
+          if (item.vouchers && item.vouchers.length > 0) {
+            const itemsHTML = item.vouchers.map((v) => {
+              const displayObj = getDisplayComment(v.comments);
+              let commentPreviewHTML = '';
+
+              if (displayObj) {
+                const tagClass = displayObj.isHighlight ? 'highlight' : 'recent';
+                const tagText = displayObj.isHighlight ? '★ 강조' : '최신';
+                const boxClass = displayObj.isHighlight ? 'highlighted' : '';
+
+                commentPreviewHTML = `
+                  <div class="comment-preview-box ${boxClass}" onclick="openChatModal(${item.day}, ${v.id})">
+                    <span class="comment-tag ${tagClass}">${tagText}</span>
+                    <span class="comment-preview-text">${escapeHtml(displayObj.comment.text)}</span>
+                  </div>
+                `;
+              }
+
+              return `
+                <div class="voucher-item">
+                  <div class="voucher-title">${escapeHtml(v.title || '바우처')}</div>
+                  <div class="voucher-preview" onclick="openViewModal(${item.day}, ${v.id})">
+                    <img src="${v.image}" alt="바우처 이미지">
+                  </div>
+                  ${commentPreviewHTML}
+                </div>
+              `;
+            }).join('');
+
+            contentHTML = `<div class="voucher-slider" id="home-slider-${item.day}">${itemsHTML}</div>`;
+          } else {
+            contentHTML = `
+              <div class="empty-voucher" onclick="openAddModal(${item.day})">
+                + [${travelInfo.currentMember}] 님의 바우처가 없습니다.<br>터치하여 바우처를 추가해보세요.
+              </div>
+            `;
+          }
+
+          let navHTML = '';
+          if (item.vouchers && item.vouchers.length > 1) {
+            navHTML = `
+              <div class="nav-controls">
+                <button class="btn-nav" onclick="scrollVoucher('home-slider-${item.day}', 'prev')">이전</button>
+                <button class="btn-nav" onclick="scrollVoucher('home-slider-${item.day}', 'next')">다음</button>
+              </div>
+            `;
+          }
+
+          const firstVoucherId = (item.vouchers && item.vouchers.length > 0) ? item.vouchers[0].id : null;
+          const chatButtonAction = firstVoucherId 
+            ? `openChatModalForCurrentSlide(${item.day})` 
+            : `alert('바우처를 먼저 추가해 주세요.')`;
+
+          card.innerHTML = `
+            <div class="day-header" onclick="toggleHomeVoucherDay(${item.day})">
+              <div class="day-title-box">
+                <span>${item.title}</span>
+                ${dateStr ? `<span class="day-date-text">${dateStr}</span>` : ''}
+              </div>
+              <span class="icon">▼</span>
+            </div>
+            <div class="day-content">
+              ${contentHTML}
+              <div class="day-footer">
+                <div class="action-group">
+                  ${(item.vouchers && item.vouchers.length > 0) ? `<button class="btn-link btn-edit-link" onclick="openListManageModal(${item.day})">편집</button>` : ''}
+                  <button class="btn-link" onclick="openAddModal(${item.day})">+ 바우처 추가</button>
+                  <button class="btn-link" onclick="${chatButtonAction}">댓글</button>
+                </div>
+                ${navHTML}
+              </div>
+            </div>
+          `;
+
+          homeVoucherContainer.appendChild(card);
+        });
       }
 
-      saveData();
-      renderExpenseTab();
-      closeBudgetModal();
-    }
+      // 2. 일자별 저장된 장소 박스 (오늘 날짜 당일 박스 1개만 노출)
+      const homeSavedContainer = document.getElementById('homeSavedDayList');
+      if (homeSavedContainer) {
+        homeSavedContainer.innerHTML = '';
+        const currentMemberPlaces = (savedPlaces[travelInfo.currentMember]) || {};
+        const filteredSchedule = schedule.filter(item => item.day === todayDay);
 
-    function openExpenseDetailModal(key) {
-      activeExpenseKey = key;
-      const exp = getCurMemberExpense();
-      let title = '';
+        filteredSchedule.forEach((item) => {
+          const isOpen = homeSavedOpenState[item.day] !== false;
+          const card = document.createElement('div');
+          card.className = `day-card ${isOpen ? 'open' : ''}`;
 
-      if (key === 'flight') title = '비행기 결제 내역';
-      else if (key === 'lodging') title = '숙소 결제 내역';
-      else if (key === 'extra') title = '여비 내역';
-      else {
-        const cat = exp.localCategories.find(c => c.id === key);
-        if (cat) title = `${cat.name} 내역`;
-      }
+          const dateStr = getFormattedDate(item.day);
+          const placesList = currentMemberPlaces[item.day] || [];
 
-      document.getElementById('expenseDetailTitle').innerText = title;
-      renderExpenseLogs();
-      openModalWithHistory('expenseDetailModal');
-    }
+          let contentHTML = '';
+          if (placesList.length > 0) {
+            const placesHTML = placesList.map(p => `
+              <div class="place-item">
+                <span class="place-name">${escapeHtml(p.name)}</span>
+                ${p.url ? `<button class="btn-map-view" onclick="window.open('${escapeQuotes(p.url)}', '_blank')">지도 보기</button>` : ''}
+              </div>
+            `).join('');
 
-    function closeExpenseDetailModal() {
-      closeModalWithHistory('expenseDetailModal');
-      activeExpenseKey = null;
-    }
+            contentHTML = `<div class="place-scroll-box">${placesHTML}</div>`;
+          } else {
+            contentHTML = `
+              <div class="empty-voucher" onclick="openAddPlaceModal(${item.day})">
+                + [${travelInfo.currentMember}] 님의 저장된 장소가 없습니다.<br>터치하여 장소를 추가해보세요.
+              </div>
+            `;
+          }
 
-    function getActiveExpenseObject() {
-      const exp = getCurMemberExpense();
-      if (['flight', 'lodging', 'extra'].includes(activeExpenseKey)) {
-        return exp[activeExpenseKey];
-      } else {
-        return exp.localCategories.find(c => c.id === activeExpenseKey);
-      }
-    }
+          card.innerHTML = `
+            <div class="day-header" onclick="toggleHomeSavedDay(${item.day})">
+              <div class="day-title-box">
+                <span>${item.title}</span>
+                ${dateStr ? `<span class="day-date-text">${dateStr}</span>` : ''}
+              </div>
+              <span class="icon">▼</span>
+            </div>
+            <div class="day-content">
+              ${contentHTML}
+              <div class="day-footer">
+                <div class="action-group">
+                  ${(placesList.length > 0) ? `<button class="btn-link btn-edit-link" onclick="openEditPlaceModal(${item.day})">편집</button>` : ''}
+                  <button class="btn-link" onclick="openAddPlaceModal(${item.day})">+ 장소 추가</button>
+                </div>
+              </div>
+            </div>
+          `;
 
-    function renderExpenseLogs() {
-      const targetObj = getActiveExpenseObject();
-      const container = document.getElementById('expenseLogContainer');
-      container.innerHTML = '';
-
-      if (!targetObj || !targetObj.logs || targetObj.logs.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">작성된 사용 내역이 없습니다.</div>`;
-        return;
-      }
-
-      targetObj.logs.forEach((log) => {
-        const unit = log.currency === 'KRW' ? '원' : '엔';
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <div class="list-item-info">
-            <span class="list-item-title">${log.memo} (${log.amount.toLocaleString()}${unit})</span>
-          </div>
-          <button class="btn-item-del" onclick="deleteExpenseLog(${log.id})">삭제</button>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function addExpenseLog() {
-      const memo = document.getElementById('inputLogMemo').value.trim();
-      const amount = parseFloat(document.getElementById('inputLogAmount').value);
-      const currency = document.getElementById('inputLogCurrency').value;
-
-      if (!memo || isNaN(amount)) {
-        alert('사용처 메모와 올바른 금액을 입력해주세요.');
-        return;
-      }
-
-      const targetObj = getActiveExpenseObject();
-      if (!targetObj.logs) targetObj.logs = [];
-
-      targetObj.logs.push({
-        id: Date.now(),
-        memo: memo,
-        amount: amount,
-        currency: currency
-      });
-
-      document.getElementById('inputLogMemo').value = '';
-      document.getElementById('inputLogAmount').value = '';
-
-      saveData();
-      renderExpenseLogs();
-      renderExpenseTab();
-    }
-
-    function deleteExpenseLog(logId) {
-      const targetObj = getActiveExpenseObject();
-      if (targetObj && targetObj.logs) {
-        targetObj.logs = targetObj.logs.filter(l => l.id !== logId);
-        saveData();
-        renderExpenseLogs();
-        renderExpenseTab();
+          homeSavedContainer.appendChild(card);
+        });
       }
     }
 
-    function openAddLocalCategoryModal() {
-      document.getElementById('inputLocalCatName').value = '';
-      document.getElementById('inputLocalCatAmount').value = '';
-      openModalWithHistory('addLocalCatModal');
-    }
+    /* -------------------------------------------------------------------------- */
+    /*                               헤더 및 멤버 관리                             */
+    /* -------------------------------------------------------------------------- */
 
-    function closeAddLocalCategoryModal() {
-      closeModalWithHistory('addLocalCatModal');
-    }
-
-    function saveNewLocalCategory() {
-      const name = document.getElementById('inputLocalCatName').value.trim();
-      const amount = parseFloat(document.getElementById('inputLocalCatAmount').value) || 0;
-      const currency = document.getElementById('inputLocalCatCurrency').value;
-
-      if (!name) {
-        alert('항목 이름을 입력하세요.');
-        return;
-      }
-
-      const exp = getCurMemberExpense();
-      exp.localCategories.push({
-        id: `cat_${Date.now()}`,
-        name: name,
-        initialAmount: amount,
-        currency: currency,
-        displayCurrency: currency,
-        logs: []
-      });
-
-      saveData();
-      renderExpenseTab();
-      closeAddLocalCategoryModal();
-    }
-
-    function openManageLocalCategoriesModal() {
-      renderManageLocalCategories();
-      openModalWithHistory('manageLocalCatModal');
-    }
-
-    function closeManageLocalCategoriesModal() {
-      closeModalWithHistory('manageLocalCatModal');
-    }
-
-    function renderManageLocalCategories() {
-      const exp = getCurMemberExpense();
-      const container = document.getElementById('manageLocalCatContainer');
-      container.innerHTML = '';
-
-      if (exp.localCategories.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">등록된 현지 경비 항목이 없습니다.</div>`;
-        return;
-      }
-
-      exp.localCategories.forEach(cat => {
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <span class="list-item-title">${cat.name}</span>
-          <button class="btn-item-del" onclick="deleteLocalCategory('${cat.id}')">삭제</button>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function deleteLocalCategory(catId) {
-      const exp = getCurMemberExpense();
-      exp.localCategories = exp.localCategories.filter(c => c.id !== catId);
-      saveData();
-      renderManageLocalCategories();
-      renderExpenseTab();
+    function getTripDaysCount() {
+      if (!travelInfo.startDate || !travelInfo.endDate) return 5;
+      const diffTime = Math.abs(travelInfo.endDate - travelInfo.startDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      return diffDays > 0 ? diffDays : 1;
     }
 
     function renderHeader() {
@@ -2098,120 +2669,593 @@
       document.getElementById('expenseTitleT2').innerText = travelInfo.t2 || '일정 미정';
       document.getElementById('savedTitleT2').innerText = travelInfo.t2 || '일정 미정';
 
-      const tagsContainer = document.getElementById('memberTagsContainer');
-      const savedTagsContainer = document.getElementById('savedMemberTagsContainer');
-      const expenseTagsContainer = document.getElementById('expenseMemberTagsContainer');
+      const containers = [
+        document.getElementById('memberTagsContainer'),
+        document.getElementById('expenseMemberTagsContainer'),
+        document.getElementById('savedMemberTagsContainer')
+      ];
 
-      tagsContainer.innerHTML = '';
-      savedTagsContainer.innerHTML = '';
-      expenseTagsContainer.innerHTML = '';
-
-      (travelInfo.members || []).forEach(member => {
-        const isActive = member === travelInfo.currentMember;
-
-        const createTag = () => {
+      containers.forEach(container => {
+        if (!container) return;
+        container.innerHTML = '';
+        (travelInfo.members || []).forEach(member => {
+          const isActive = member === travelInfo.currentMember;
           const span = document.createElement('span');
           span.className = `member-tag ${isActive ? 'active' : ''}`;
           span.innerText = member;
           span.onclick = () => selectMember(member);
-          return span;
-        };
-
-        tagsContainer.appendChild(createTag());
-        savedTagsContainer.appendChild(createTag());
-        expenseTagsContainer.appendChild(createTag());
+          container.appendChild(span);
+        });
       });
     }
 
     function selectMember(member) {
       travelInfo.currentMember = member;
-      currentOpenDay = null;
-      currentSavedOpenDay = null;
       saveData();
       renderHeader();
+      renderHomeTab();
       render();
       renderSavedPlaces();
       renderExpenseTab();
     }
 
-    function initSchedulesForRange(startDate, endDate) {
-      const validStart = parseValidDate(startDate, new Date());
-      const validEnd = parseValidDate(endDate, validStart);
-      const dayDiff = Math.max(1, Math.round((validEnd - validStart) / (1000 * 60 * 60 * 24)) + 1);
+    function getScheduleForMember() {
+      const member = travelInfo.currentMember || '은섭';
+      const totalDays = getTripDaysCount();
 
-      travelInfo.members.forEach(m => {
-        if (!userSchedules[m]) userSchedules[m] = [];
-        const currentDays = userSchedules[m];
+      if (!userSchedules[member]) {
+        userSchedules[member] = [];
+      }
 
-        if (currentDays.length < dayDiff) {
-          for (let i = currentDays.length + 1; i <= dayDiff; i++) {
-            currentDays.push({ day: i, title: `Day ${i}`, vouchers: [] });
-          }
-        } else if (currentDays.length > dayDiff) {
-          userSchedules[m] = currentDays.slice(0, dayDiff);
+      let memberDays = userSchedules[member];
+
+      if (memberDays.length < totalDays) {
+        for (let i = memberDays.length + 1; i <= totalDays; i++) {
+          memberDays.push({ day: i, title: `Day ${i}`, vouchers: [] });
+        }
+      } else if (memberDays.length > totalDays) {
+        memberDays = memberDays.slice(0, totalDays);
+      }
+
+      userSchedules[member] = memberDays;
+      return userSchedules[member];
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                달력 모달 로직                               */
+    /* -------------------------------------------------------------------------- */
+
+    let calCurrentYear = 2026;
+    let calCurrentMonth = 11;
+    let calSelectedStart = null;
+    let calSelectedEnd = null;
+
+    function openHeaderEditModal() {
+      document.getElementById('editT1').value = travelInfo.t1 || '';
+      document.getElementById('editMembers').value = (travelInfo.members || []).join(', ');
+
+      calSelectedStart = travelInfo.startDate ? new Date(travelInfo.startDate) : new Date(2026, 11, 12);
+      calSelectedEnd = travelInfo.endDate ? new Date(travelInfo.endDate) : new Date(2026, 11, 16);
+
+      calCurrentYear = calSelectedStart.getFullYear();
+      calCurrentMonth = calSelectedStart.getMonth();
+
+      renderCalendar();
+      initReorderList();
+      openModalWithHistory('headerEditModal');
+    }
+
+    function closeHeaderEditModal() {
+      closeModalWithHistory('headerEditModal');
+    }
+
+    function changeCalMonth(delta) {
+      calCurrentMonth += delta;
+      if (calCurrentMonth > 11) {
+        calCurrentMonth = 0;
+        calCurrentYear += 1;
+      } else if (calCurrentMonth < 0) {
+        calCurrentMonth = 11;
+        calCurrentYear -= 1;
+      }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      document.getElementById('calMonthTitle').innerText = `${calCurrentYear}년 ${calCurrentMonth + 1}월`;
+
+      const display = document.getElementById('dateRangeDisplay');
+      if (calSelectedStart && calSelectedEnd) {
+        const sm = calSelectedStart.getMonth() + 1;
+        const sd = calSelectedStart.getDate();
+        const em = calSelectedEnd.getMonth() + 1;
+        const ed = calSelectedEnd.getDate();
+
+        if (calSelectedStart.getTime() === calSelectedEnd.getTime()) {
+          display.innerText = `${sm}월 ${sd}일 (당일)`;
+        } else {
+          display.innerText = `${sm}월 ${sd}일 ~ ${em}월 ${ed}일`;
+        }
+      } else if (calSelectedStart) {
+        const sm = calSelectedStart.getMonth() + 1;
+        const sd = calSelectedStart.getDate();
+        display.innerText = `${sm}월 ${sd}일 (종료일 선택 중...)`;
+      } else {
+        display.innerText = '날짜를 선택해 주세요';
+      }
+
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+
+      const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+      dayLabels.forEach(lbl => {
+        const div = document.createElement('div');
+        div.className = 'cal-day-label';
+        div.innerText = lbl;
+        grid.appendChild(div);
+      });
+
+      const firstDay = new Date(calCurrentYear, calCurrentMonth, 1).getDay();
+      const lastDate = new Date(calCurrentYear, calCurrentMonth + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day disabled';
+        grid.appendChild(empty);
+      }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'cal-day';
+        dayDiv.innerText = d;
+
+        const curDate = new Date(calCurrentYear, calCurrentMonth, d);
+
+        if (calSelectedStart && curDate.getTime() === calSelectedStart.getTime()) {
+          dayDiv.classList.add('selected-start');
+        }
+        if (calSelectedEnd && curDate.getTime() === calSelectedEnd.getTime()) {
+          dayDiv.classList.add('selected-end');
+        }
+        if (calSelectedStart && calSelectedEnd && curDate > calSelectedStart && curDate < calSelectedEnd) {
+          dayDiv.classList.add('in-range');
         }
 
-        if (!savedPlaces[m]) savedPlaces[m] = {};
+        dayDiv.onclick = () => onCalDayClick(curDate);
+        grid.appendChild(dayDiv);
+      }
+    }
+
+    function onCalDayClick(date) {
+      if (!calSelectedStart || (calSelectedStart && calSelectedEnd)) {
+        calSelectedStart = date;
+        calSelectedEnd = null;
+      } else if (calSelectedStart && !calSelectedEnd) {
+        if (date < calSelectedStart) {
+          calSelectedEnd = calSelectedStart;
+          calSelectedStart = date;
+        } else {
+          calSelectedEnd = date;
+        }
+      }
+      renderCalendar();
+    }
+
+    function initReorderList() {
+      const box = document.getElementById('reorderListBox');
+      box.innerHTML = '';
+
+      const totalDays = getTripDaysCount();
+      for (let i = 1; i <= totalDays; i++) {
+        const item = document.createElement('div');
+        item.className = 'reorder-item';
+        item.dataset.dayIndex = i;
+
+        item.innerHTML = `
+          <div class="reorder-item-title">
+            <span>Day ${i}</span>
+            <span class="reorder-item-badge">${getFormattedDate(i)}</span>
+          </div>
+          <div class="drag-handle">☰</div>
+        `;
+
+        box.appendChild(item);
+      }
+    }
+
+    function saveHeaderInfo() {
+      const t1Val = document.getElementById('editT1').value.trim();
+      const membersVal = document.getElementById('editMembers').value.trim();
+
+      if (t1Val) travelInfo.t1 = t1Val;
+
+      if (membersVal) {
+        const list = membersVal.split(',').map(m => m.trim()).filter(m => m.length > 0);
+        if (list.length > 0) {
+          travelInfo.members = list;
+          if (!list.includes(travelInfo.currentMember)) {
+            travelInfo.currentMember = list[0];
+          }
+        }
+      }
+
+      if (calSelectedStart) {
+        travelInfo.startDate = calSelectedStart;
+        travelInfo.endDate = calSelectedEnd || calSelectedStart;
+
+        const sm = travelInfo.startDate.getMonth() + 1;
+        const sd = travelInfo.startDate.getDate();
+        const em = travelInfo.endDate.getMonth() + 1;
+        const ed = travelInfo.endDate.getDate();
+
+        if (travelInfo.startDate.getTime() === travelInfo.endDate.getTime()) {
+          travelInfo.t2 = `${sm}월 ${sd}일 일정`;
+        } else {
+          travelInfo.t2 = `${sm}월 ${sd}일~${ed}일 일정`;
+        }
+      }
+
+      saveData();
+      renderHeader();
+      renderHomeTab();
+      render();
+      renderSavedPlaces();
+      renderExpenseTab();
+      closeHeaderEditModal();
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                              바우처 탭 렌더링                               */
+    /* -------------------------------------------------------------------------- */
+
+    function toggleDay(dayNum) {
+      if (currentOpenDay === dayNum) {
+        currentOpenDay = null;
+      } else {
+        currentOpenDay = dayNum;
+      }
+      render();
+    }
+
+    function scrollVoucher(sliderId, direction) {
+      const slider = document.getElementById(sliderId);
+      if (!slider) return;
+      const scrollAmount = slider.clientWidth;
+      if (direction === 'next') {
+        slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      } else {
+        slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      }
+    }
+
+    function openViewModal(day, voucherId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === day);
+      if (!dayData) return;
+      const v = dayData.vouchers.find(item => item.id === voucherId);
+      if (!v) return;
+
+      document.getElementById('viewModalTitle').innerText = v.title || '바우처 상세';
+      document.getElementById('viewModalImg').src = v.image;
+      openModalWithHistory('viewModal');
+    }
+
+    function closeViewModal(e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeModalWithHistory('viewModal');
+      }
+    }
+
+    function forceCloseViewModal() {
+      closeModalWithHistory('viewModal');
+    }
+
+    function openAddModal(day) {
+      editingDay = day;
+      document.getElementById('inputTitle').value = '';
+      document.getElementById('inputFile').value = '';
+      const btn = document.getElementById('btnSaveVoucher');
+      if (btn) {
+        btn.innerText = '저장';
+        btn.disabled = false;
+      }
+      openModalWithHistory('addModal');
+    }
+
+    function closeAddModal() {
+      const btn = document.getElementById('btnSaveVoucher');
+      if (btn) {
+        btn.innerText = '저장';
+        btn.disabled = false;
+      }
+      closeModalWithHistory('addModal');
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
       });
     }
 
-    function getFormattedDate(dayNum) {
-      if (!travelInfo.startDate || isNaN(travelInfo.startDate.getTime())) return '';
-      const targetDate = new Date(travelInfo.startDate);
-      targetDate.setDate(targetDate.getDate() + (dayNum - 1));
+    async function saveNewVoucher() {
+      const title = document.getElementById('inputTitle').value.trim();
+      const fileInput = document.getElementById('inputFile');
+      const btn = document.getElementById('btnSaveVoucher');
 
-      const month = targetDate.getMonth() + 1;
-      const date = targetDate.getDate();
-      const days = ['일', '월', '화', '수', '목', '금', '토'];
-      const dayOfWeek = days[targetDate.getDay()];
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('이미지 파일을 선택해 주세요.');
+        return;
+      }
 
-      return `${month}.${date} (${dayOfWeek})`;
+      btn.innerText = '업로드 중...';
+      btn.disabled = true;
+
+      try {
+        const file = fileInput.files[0];
+        let imageUrl = '';
+
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+
+          const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+          if (data && data.success && data.data && data.data.url) {
+            imageUrl = data.data.url;
+          } else {
+            throw new Error('ImgBB 업로드 서버 오류');
+          }
+        } catch (uploadErr) {
+          console.warn('ImgBB 업로드 실패, 로컬 이미지 데이터로 대체합니다.', uploadErr);
+          imageUrl = await readFileAsBase64(file);
+        }
+
+        const schedule = getScheduleForMember();
+        const dayData = schedule.find(d => d.day === editingDay);
+        if (dayData) {
+          const newVoucher = {
+            id: Date.now(),
+            title: title || '새 바우처',
+            image: imageUrl,
+            comments: []
+          };
+          dayData.vouchers.push(newVoucher);
+          saveData();
+          render();
+          renderHomeTab();
+        }
+
+        closeAddModal();
+      } catch (err) {
+        alert('바우처 추가 중 오류가 발생했습니다: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.innerText = '저장';
+          btn.disabled = false;
+        }
+      }
     }
 
-    function formatT2Text(sDate, eDate) {
-      const validS = parseValidDate(sDate);
-      const validE = parseValidDate(eDate);
-      if (!validS) return '일정을 선택하세요';
+    function openListManageModal(day) {
+      editingDay = day;
+      renderVoucherListModal();
+      openModalWithHistory('listManageModal');
+    }
 
-      const sm = validS.getMonth() + 1;
-      const sd = validS.getDate();
+    function closeListManageModal() {
+      closeModalWithHistory('listManageModal');
+    }
 
-      if (!validE || validS.getTime() === validE.getTime()) {
-        return `${sm}월 ${sd}일 일정`;
+    function renderVoucherListModal() {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      const container = document.getElementById('voucherListContainer');
+      container.innerHTML = '';
+
+      if (!dayData || !dayData.vouchers || dayData.vouchers.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:#8e8e93; text-align:center; padding:20px 0;">등록된 바우처가 없습니다.</div>';
+        return;
       }
-      const em = validE.getMonth() + 1;
-      const ed = validE.getDate();
-      return sm === em ? `${sm}월 ${sd}일~${ed}일 일정` : `${sm}월 ${sd}일~${em}월 ${ed}일 일정`;
+
+      dayData.vouchers.forEach((v) => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <div class="list-item-info">
+            <img class="list-item-thumb" src="${v.image}" alt="thumb">
+            <span class="list-item-title">${escapeHtml(v.title || '바우처')}</span>
+          </div>
+          <button class="btn-item-del" onclick="deleteVoucher(${v.id})">삭제</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deleteVoucher(voucherId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (!dayData) return;
+
+      dayData.vouchers = dayData.vouchers.filter(v => v.id !== voucherId);
+      saveData();
+      renderVoucherListModal();
+      render();
+      renderHomeTab();
+    }
+
+    function deleteAllVouchers() {
+      if (!confirm('이 Day의 모든 바우처를 삭제하시겠습니까?')) return;
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (!dayData) return;
+
+      dayData.vouchers = [];
+      saveData();
+      renderVoucherListModal();
+      render();
+      renderHomeTab();
     }
 
     function getDisplayComment(comments) {
       if (!comments || comments.length === 0) return null;
-      const highlighted = comments.find(c => c.isHighlighted);
-      if (highlighted) return { comment: highlighted, isHighlight: true };
+      const pinned = comments.filter(c => c.pinned);
+      if (pinned.length > 0) {
+        return { comment: pinned[pinned.length - 1], isHighlight: true };
+      }
       return { comment: comments[comments.length - 1], isHighlight: false };
     }
 
-    function getScheduleForMember(member) {
-      const targetMember = member || travelInfo.currentMember;
-      if (!userSchedules[targetMember]) {
-        initSchedulesForRange(travelInfo.startDate, travelInfo.endDate);
+    function openChatModal(day, voucherId) {
+      editingDay = day;
+      activeVoucherId = voucherId;
+      renderChatModal();
+      openModalWithHistory('chatModal');
+    }
+
+    function openChatModalForCurrentSlide(day) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === day);
+      if (!dayData || !dayData.vouchers || dayData.vouchers.length === 0) return;
+
+      const slider = document.getElementById(`slider-${day}`) || document.getElementById(`home-slider-${day}`);
+      if (!slider) {
+        openChatModal(day, dayData.vouchers[0].id);
+        return;
       }
-      return userSchedules[targetMember];
+
+      const scrollLeft = slider.scrollLeft;
+      const width = slider.clientWidth;
+      const index = Math.round(scrollLeft / width);
+      const safeIndex = Math.min(Math.max(index, 0), dayData.vouchers.length - 1);
+
+      openChatModal(day, dayData.vouchers[safeIndex].id);
+    }
+
+    function closeChatModal() {
+      closeModalWithHistory('chatModal');
+    }
+
+    function renderChatModal() {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (!dayData) return;
+      const v = dayData.vouchers.find(item => item.id === activeVoucherId);
+      if (!v) return;
+
+      document.getElementById('chatModalHeader').innerText = v.title || '바우처 댓글';
+      document.getElementById('chatModalSubHeader').innerText = `[${travelInfo.currentMember}] 님의 바우처 메모`;
+
+      const container = document.getElementById('chatContainer');
+      container.innerHTML = '';
+
+      if (!v.comments || v.comments.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:#8e8e93; text-align:center; padding:30px 0;">작성된 댓글이나 메모가 없습니다.<br>아래에서 첫 댓글을 남겨보세요!</div>';
+        return;
+      }
+
+      v.comments.forEach((c) => {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${c.pinned ? 'highlighted' : ''}`;
+
+        bubble.innerHTML = `
+          <div>${escapeHtml(c.text)}</div>
+          <div class="chat-meta">
+            <span>${c.author || travelInfo.currentMember} · ${c.time || ''}</span>
+            <div class="chat-actions">
+              <button class="btn-pin ${c.pinned ? 'active' : ''}" onclick="togglePinComment(${c.id})">${c.pinned ? '★ 강조됨' : '☆ 강조'}</button>
+              <button class="btn-comment-del" onclick="deleteComment(${c.id})">삭제</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(bubble);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendComment() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (!dayData) return;
+      const v = dayData.vouchers.find(item => item.id === activeVoucherId);
+      if (!v) return;
+
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+      const newComment = {
+        id: Date.now(),
+        author: travelInfo.currentMember,
+        text: text,
+        time: timeStr,
+        pinned: false
+      };
+
+      if (!v.comments) v.comments = [];
+      v.comments.push(newComment);
+
+      saveData();
+      input.value = '';
+      renderChatModal();
+      render();
+      renderHomeTab();
+    }
+
+    function handleChatKeyPress(e) {
+      if (e.key === 'Enter') {
+        sendComment();
+      }
+    }
+
+    function togglePinComment(commentId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (!dayData) return;
+      const v = dayData.vouchers.find(item => item.id === activeVoucherId);
+      if (!v) return;
+
+      const comment = v.comments.find(c => c.id === commentId);
+      if (comment) {
+        comment.pinned = !comment.pinned;
+        saveData();
+        renderChatModal();
+        render();
+        renderHomeTab();
+      }
+    }
+
+    function deleteComment(commentId) {
+      const schedule = getScheduleForMember();
+      const dayData = schedule.find(d => d.day === editingDay);
+      if (!dayData) return;
+      const v = dayData.vouchers.find(item => item.id === activeVoucherId);
+      if (!v) return;
+
+      v.comments = v.comments.filter(c => c.id !== commentId);
+      saveData();
+      renderChatModal();
+      render();
+      renderHomeTab();
     }
 
     function render() {
-      const scrollPositions = {};
       const schedule = getScheduleForMember();
-      schedule.forEach(item => {
-        const el = document.getElementById(`slider-${item.day}`);
-        if (el) scrollPositions[item.day] = el.scrollLeft;
-      });
-
       const container = document.getElementById('dayList');
       container.innerHTML = '';
 
       schedule.forEach((item) => {
-        const isOpen = item.day === currentOpenDay;
+        const isOpen = currentOpenDay === item.day;
         const card = document.createElement('div');
         card.className = `day-card ${isOpen ? 'open' : ''}`;
 
@@ -2231,14 +3275,14 @@
               commentPreviewHTML = `
                 <div class="comment-preview-box ${boxClass}" onclick="openChatModal(${item.day}, ${v.id})">
                   <span class="comment-tag ${tagClass}">${tagText}</span>
-                  <span class="comment-preview-text">${displayObj.comment.text}</span>
+                  <span class="comment-preview-text">${escapeHtml(displayObj.comment.text)}</span>
                 </div>
               `;
             }
 
             return `
               <div class="voucher-item">
-                <div class="voucher-title">${v.title || '바우처'}</div>
+                <div class="voucher-title">${escapeHtml(v.title || '바우처')}</div>
                 <div class="voucher-preview" onclick="openViewModal(${item.day}, ${v.id})">
                   <img src="${v.image}" alt="바우처 이미지">
                 </div>
@@ -2260,8 +3304,8 @@
         if (item.vouchers && item.vouchers.length > 1) {
           navHTML = `
             <div class="nav-controls">
-              <button class="btn-nav" onclick="scrollVoucher(${item.day}, 'prev')">이전</button>
-              <button class="btn-nav" onclick="scrollVoucher(${item.day}, 'next')">다음</button>
+              <button class="btn-nav" onclick="scrollVoucher('slider-${item.day}', 'prev')">이전</button>
+              <button class="btn-nav" onclick="scrollVoucher('slider-${item.day}', 'next')">다음</button>
             </div>
           `;
         }
@@ -2294,64 +3338,521 @@
 
         container.appendChild(card);
       });
+    }
 
-      Object.keys(scrollPositions).forEach(day => {
-        const el = document.getElementById(`slider-${day}`);
-        if (el) el.scrollLeft = scrollPositions[day];
+    /* -------------------------------------------------------------------------- */
+    /*                                경비 탭 렌더링                               */
+    /* -------------------------------------------------------------------------- */
+
+    function getCurrentUserExpense() {
+      const member = travelInfo.currentMember || '은섭';
+      if (!expenseData[member]) {
+        expenseData[member] = {
+          flight: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
+          lodging: { initialAmount: 0, currency: 'KRW', displayCurrency: 'KRW', logs: [] },
+          extra: { initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+          localCategories: [
+            { id: 'cat_1', name: '식비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_2', name: '교통비', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_3', name: '투어, 티켓', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_4', name: '쇼핑', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] },
+            { id: 'cat_5', name: '가챠', initialAmount: 0, currency: 'JPY', displayCurrency: 'JPY', logs: [] }
+          ]
+        };
+      }
+      return expenseData[member];
+    }
+
+    function calculateCategoryTotal(categoryObj) {
+      if (!categoryObj) return { initialKRW: 0, initialJPY: 0, spentKRW: 0, spentJPY: 0, remainingKRW: 0, remainingJPY: 0 };
+
+      const initVal = categoryObj.initialAmount || 0;
+      const initCurr = categoryObj.currency || 'JPY';
+
+      let initialKRW = 0;
+      let initialJPY = 0;
+
+      if (initCurr === 'KRW') {
+        initialKRW = initVal;
+        initialJPY = jpyToKrwRate > 0 ? initVal / (jpyToKrwRate / 10) : 0;
+      } else {
+        initialJPY = initVal;
+        initialKRW = initVal * (jpyToKrwRate / 10);
+      }
+
+      let spentKRW = 0;
+      let spentJPY = 0;
+
+      (categoryObj.logs || []).forEach(log => {
+        const amount = log.amount || 0;
+        if (log.currency === 'KRW') {
+          spentKRW += amount;
+          spentJPY += jpyToKrwRate > 0 ? amount / (jpyToKrwRate / 10) : 0;
+        } else {
+          spentJPY += amount;
+          spentKRW += amount * (jpyToKrwRate / 10);
+        }
+      });
+
+      const remainingKRW = initialKRW - spentKRW;
+      const remainingJPY = initialJPY - spentJPY;
+
+      return { initialKRW, initialJPY, spentKRW, spentJPY, remainingKRW, remainingJPY };
+    }
+
+    function renderExpenseTab() {
+      const uExp = getCurrentUserExpense();
+
+      // 사전 결제 및 여비 항목 업데이트
+      const items = ['flight', 'lodging', 'extra'];
+      items.forEach(key => {
+        const cat = uExp[key];
+        const calc = calculateCategoryTotal(cat);
+        const badge = document.getElementById(`badge-${key}`);
+        const amountText = document.getElementById(`amount-${key}`);
+
+        if (badge && amountText) {
+          const displayCurr = cat.displayCurrency || cat.currency || 'KRW';
+          let val = 0;
+
+          if (key === 'flight' || key === 'lodging') {
+            val = displayCurr === 'KRW' ? Math.round(calc.spentKRW) : Math.round(calc.spentJPY);
+          } else {
+            val = displayCurr === 'KRW' ? Math.round(calc.remainingKRW) : Math.round(calc.remainingJPY);
+          }
+
+          if (val < 0) {
+            badge.classList.add('negative');
+          } else {
+            badge.classList.remove('negative');
+          }
+
+          const unitStr = displayCurr === 'KRW' ? '원' : '엔';
+          amountText.innerText = `${formatNumber(val)}${unitStr}`;
+        }
+      });
+
+      // 현지 경비 리스트 업데이트
+      const localListContainer = document.getElementById('localCategoriesList');
+      if (localListContainer) {
+        localListContainer.innerHTML = '';
+        (uExp.localCategories || []).forEach(cat => {
+          const calc = calculateCategoryTotal(cat);
+          const displayCurr = cat.displayCurrency || cat.currency || 'JPY';
+          const remVal = displayCurr === 'KRW' ? Math.round(calc.remainingKRW) : Math.round(calc.remainingJPY);
+          const isNegative = remVal < 0;
+          const unitStr = displayCurr === 'KRW' ? '원' : '엔';
+
+          const row = document.createElement('div');
+          row.className = 'local-item';
+          row.innerHTML = `
+            <div class="expense-label">
+              <span class="clickable-purpose" onclick="openBudgetModal('local_${cat.id}')" title="터치하여 초기 예산 설정">${escapeHtml(cat.name)}</span>
+              <span class="btn-detail-link" onclick="openExpenseDetailModal('local_${cat.id}')">내역</span>
+            </div>
+            <div class="amount-badge ${isNegative ? 'negative' : ''}" onclick="toggleItemDisplayCurrency('local_${cat.id}')">
+              <span>${formatNumber(remVal)}${unitStr}</span>
+              <span class="arrow">⇄</span>
+            </div>
+          `;
+          localListContainer.appendChild(row);
+        });
+      }
+
+      // 하단 고정 총합 업데이트
+      let totalUsedKRW = 0;
+      let totalUsedJPY = 0;
+      let totalRemKRW = 0;
+      let totalRemJPY = 0;
+
+      // 현지 경비 + 여비 총합 계산
+      const localCatsAndExtra = [...(uExp.localCategories || []), uExp.extra];
+      localCatsAndExtra.forEach(cat => {
+        const calc = calculateCategoryTotal(cat);
+        totalUsedKRW += calc.spentKRW;
+        totalUsedJPY += calc.spentJPY;
+        totalRemKRW += calc.remainingKRW;
+        totalRemJPY += calc.remainingJPY;
+      });
+
+      const totalUsedText = document.getElementById('totalUsedAmountText');
+      const totalAmountText = document.getElementById('totalAmountText');
+      const totalBadge = document.getElementById('totalAmountBadge');
+
+      if (totalUsedText) {
+        const val = totalDisplayCurrency === 'KRW' ? Math.round(totalUsedKRW) : Math.round(totalUsedJPY);
+        const unit = totalDisplayCurrency === 'KRW' ? '원' : '엔';
+        totalUsedText.innerText = `${formatNumber(val)}${unit}`;
+      }
+
+      if (totalAmountText && totalBadge) {
+        const val = totalDisplayCurrency === 'KRW' ? Math.round(totalRemKRW) : Math.round(totalRemJPY);
+        const unit = totalDisplayCurrency === 'KRW' ? '원' : '엔';
+
+        if (val < 0) {
+          totalBadge.classList.add('negative');
+        } else {
+          totalBadge.classList.remove('negative');
+        }
+
+        totalAmountText.innerText = `${formatNumber(val)}${unit}`;
+      }
+    }
+
+    function toggleItemDisplayCurrency(key) {
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+
+      if (key.startsWith('local_')) {
+        const catId = key.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+      } else {
+        cat = uExp[key];
+      }
+
+      if (cat) {
+        cat.displayCurrency = cat.displayCurrency === 'KRW' ? 'JPY' : 'KRW';
+        saveData();
+        renderExpenseTab();
+      }
+    }
+
+    function toggleTotalDisplayCurrency() {
+      totalDisplayCurrency = totalDisplayCurrency === 'KRW' ? 'JPY' : 'KRW';
+      renderExpenseTab();
+    }
+
+    function openBudgetModal(key) {
+      activeExpenseKey = key;
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+      let name = '';
+
+      if (key === 'flight') { name = '비행기 (사전결제)'; cat = uExp.flight; }
+      else if (key === 'lodging') { name = '숙소 (사전결제)'; cat = uExp.lodging; }
+      else if (key === 'extra') { name = '여비'; cat = uExp.extra; }
+      else if (key.startsWith('local_')) {
+        const catId = key.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+        if (cat) name = cat.name;
+      }
+
+      if (!cat) return;
+
+      document.getElementById('budgetModalTitle').innerText = `${name} 초기 예산 설정`;
+      document.getElementById('inputInitialBudget').value = cat.initialAmount ? formatNumber(cat.initialAmount) : '';
+      document.getElementById('selectBudgetCurrency').value = cat.currency || 'JPY';
+
+      openModalWithHistory('budgetModal');
+    }
+
+    function closeBudgetModal() {
+      closeModalWithHistory('budgetModal');
+    }
+
+    function saveInitialBudget() {
+      const amountVal = parseFormattedNumber(document.getElementById('inputInitialBudget').value);
+      const currencyVal = document.getElementById('selectBudgetCurrency').value;
+
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+
+      if (activeExpenseKey === 'flight') cat = uExp.flight;
+      else if (activeExpenseKey === 'lodging') cat = uExp.lodging;
+      else if (activeExpenseKey === 'extra') cat = uExp.extra;
+      else if (activeExpenseKey.startsWith('local_')) {
+        const catId = activeExpenseKey.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+      }
+
+      if (cat) {
+        cat.initialAmount = amountVal;
+        cat.currency = currencyVal;
+        if (!cat.displayCurrency) cat.displayCurrency = currencyVal;
+        saveData();
+        renderExpenseTab();
+      }
+
+      closeBudgetModal();
+    }
+
+    function openExpenseDetailModal(key) {
+      activeExpenseKey = key;
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+      let name = '';
+
+      if (key === 'flight') { name = '비행기 (사전결제)'; cat = uExp.flight; }
+      else if (key === 'lodging') { name = '숙소 (사전결제)'; cat = uExp.lodging; }
+      else if (key === 'extra') { name = '여비'; cat = uExp.extra; }
+      else if (key.startsWith('local_')) {
+        const catId = key.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+        if (cat) name = cat.name;
+      }
+
+      if (!cat) return;
+
+      document.getElementById('expenseDetailTitle').innerText = `${name} 내역 상세`;
+      document.getElementById('inputLogMemo').value = '';
+      document.getElementById('inputLogAmount').value = '';
+      document.getElementById('inputLogCurrency').value = cat.currency || 'JPY';
+
+      renderExpenseLogs();
+      openModalWithHistory('expenseDetailModal');
+    }
+
+    function closeExpenseDetailModal() {
+      closeModalWithHistory('expenseDetailModal');
+    }
+
+    function renderExpenseLogs() {
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+
+      if (activeExpenseKey === 'flight') cat = uExp.flight;
+      else if (activeExpenseKey === 'lodging') cat = uExp.lodging;
+      else if (activeExpenseKey === 'extra') cat = uExp.extra;
+      else if (activeExpenseKey.startsWith('local_')) {
+        const catId = activeExpenseKey.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+      }
+
+      const container = document.getElementById('expenseLogContainer');
+      container.innerHTML = '';
+
+      if (!cat || !cat.logs || cat.logs.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:#8e8e93; text-align:center; padding:20px 0;">작성된 지출/결제 내역이 없습니다.</div>';
+        return;
+      }
+
+      cat.logs.forEach((log) => {
+        const unit = log.currency === 'KRW' ? '원' : '엔';
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <div class="list-item-info">
+            <div>
+              <div class="list-item-title">${escapeHtml(log.memo || '경비 사용')}</div>
+              <div style="font-size:11px; color:#8e8e93;">${log.time || ''}</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:13px; font-weight:700; color:#007aff;">${formatNumber(log.amount)}${unit}</span>
+            <button class="btn-item-del" onclick="deleteExpenseLog(${log.id})">삭제</button>
+          </div>
+        `;
+        container.appendChild(item);
       });
     }
 
-    function renderSavedPlaces() {
-      const container = document.getElementById('savedPlacesDayList');
+    function addExpenseLog() {
+      const memo = document.getElementById('inputLogMemo').value.trim();
+      const amountVal = parseFormattedNumber(document.getElementById('inputLogAmount').value);
+      const currency = document.getElementById('inputLogCurrency').value;
+
+      if (!amountVal || amountVal <= 0) {
+        alert('올바른 사용 금액을 입력해 주세요.');
+        return;
+      }
+
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+
+      if (activeExpenseKey === 'flight') cat = uExp.flight;
+      else if (activeExpenseKey === 'lodging') cat = uExp.lodging;
+      else if (activeExpenseKey === 'extra') cat = uExp.extra;
+      else if (activeExpenseKey.startsWith('local_')) {
+        const catId = activeExpenseKey.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+      }
+
+      if (!cat) return;
+
+      const now = new Date();
+      const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+      if (!cat.logs) cat.logs = [];
+      cat.logs.push({
+        id: Date.now(),
+        memo: memo || '지출',
+        amount: amountVal,
+        currency: currency,
+        time: timeStr
+      });
+
+      saveData();
+      document.getElementById('inputLogMemo').value = '';
+      document.getElementById('inputLogAmount').value = '';
+      renderExpenseLogs();
+      renderExpenseTab();
+    }
+
+    function deleteExpenseLog(logId) {
+      const uExp = getCurrentUserExpense();
+      let cat = null;
+
+      if (activeExpenseKey === 'flight') cat = uExp.flight;
+      else if (activeExpenseKey === 'lodging') cat = uExp.lodging;
+      else if (activeExpenseKey === 'extra') cat = uExp.extra;
+      else if (activeExpenseKey.startsWith('local_')) {
+        const catId = activeExpenseKey.replace('local_', '');
+        cat = (uExp.localCategories || []).find(c => c.id === catId);
+      }
+
+      if (!cat) return;
+
+      cat.logs = (cat.logs || []).filter(l => l.id !== logId);
+      saveData();
+      renderExpenseLogs();
+      renderExpenseTab();
+    }
+
+    function openAddLocalCategoryModal() {
+      document.getElementById('inputLocalCatName').value = '';
+      document.getElementById('inputLocalCatAmount').value = '';
+      document.getElementById('inputLocalCatCurrency').value = 'JPY';
+      openModalWithHistory('addLocalCatModal');
+    }
+
+    function closeAddLocalCategoryModal() {
+      closeModalWithHistory('addLocalCatModal');
+    }
+
+    function saveNewLocalCategory() {
+      const name = document.getElementById('inputLocalCatName').value.trim();
+      const amountVal = parseFormattedNumber(document.getElementById('inputLocalCatAmount').value);
+      const currency = document.getElementById('inputLocalCatCurrency').value;
+
+      if (!name) {
+        alert('항목 이름을 입력해 주세요.');
+        return;
+      }
+
+      const uExp = getCurrentUserExpense();
+      if (!uExp.localCategories) uExp.localCategories = [];
+
+      const newCat = {
+        id: 'cat_' + Date.now(),
+        name: name,
+        initialAmount: amountVal,
+        currency: currency,
+        displayCurrency: currency,
+        logs: []
+      };
+
+      uExp.localCategories.push(newCat);
+      saveData();
+      renderExpenseTab();
+      closeAddLocalCategoryModal();
+    }
+
+    function openManageLocalCategoriesModal() {
+      renderManageLocalCategories();
+      openModalWithHistory('manageLocalCatModal');
+    }
+
+    function closeManageLocalCategoriesModal() {
+      closeModalWithHistory('manageLocalCatModal');
+    }
+
+    function renderManageLocalCategories() {
+      const uExp = getCurrentUserExpense();
+      const container = document.getElementById('manageLocalCatContainer');
       container.innerHTML = '';
 
+      if (!uExp.localCategories || uExp.localCategories.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:#8e8e93; text-align:center; padding:20px 0;">등록된 현지 경비 항목이 없습니다.</div>';
+        return;
+      }
+
+      uExp.localCategories.forEach(cat => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <div class="list-item-info">
+            <span class="list-item-title">${escapeHtml(cat.name)}</span>
+          </div>
+          <button class="btn-item-del" onclick="deleteLocalCategory('${cat.id}')">삭제</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deleteLocalCategory(catId) {
+      if (!confirm('해당 경비 항목과 모든 지출 내역을 삭제하시겠습니까?')) return;
+      const uExp = getCurrentUserExpense();
+      uExp.localCategories = (uExp.localCategories || []).filter(c => c.id !== catId);
+      saveData();
+      renderManageLocalCategories();
+      renderExpenseTab();
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                              저장된 장소 탭                                 */
+    /* -------------------------------------------------------------------------- */
+
+    function toggleSavedDay(dayNum) {
+      if (currentSavedOpenDay === dayNum) {
+        currentSavedOpenDay = null;
+      } else {
+        currentSavedOpenDay = dayNum;
+      }
+      renderSavedPlaces();
+    }
+
+    function renderSavedPlaces() {
       const schedule = getScheduleForMember();
-      const currentMemberPlaces = (savedPlaces[travelInfo.currentMember]) || {};
+      const container = document.getElementById('savedPlacesDayList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const member = travelInfo.currentMember || '은섭';
+      if (!savedPlaces[member]) savedPlaces[member] = {};
+      const currentMemberPlaces = savedPlaces[member];
 
       schedule.forEach((item) => {
-        const isOpen = item.day === currentSavedOpenDay;
+        const isOpen = currentSavedOpenDay === item.day;
         const card = document.createElement('div');
         card.className = `day-card ${isOpen ? 'open' : ''}`;
 
         const dateStr = getFormattedDate(item.day);
-        const places = currentMemberPlaces[item.day] || [];
+        const placesList = currentMemberPlaces[item.day] || [];
 
-        let placesHTML = '';
-        if (places.length > 0) {
-          const listHTML = places.map(p => `
+        let contentHTML = '';
+        if (placesList.length > 0) {
+          const placesHTML = placesList.map(p => `
             <div class="place-item">
-              <span class="place-name">${p.name}</span>
-              <button class="btn-map-view" onclick="openMapView('${p.name}', '${p.url || ''}')">지도보기</button>
+              <span class="place-name">${escapeHtml(p.name)}</span>
+              ${p.url ? `<button class="btn-map-view" onclick="window.open('${escapeQuotes(p.url)}', '_blank')">지도 보기</button>` : ''}
             </div>
           `).join('');
 
-          placesHTML = `<div class="place-scroll-box">${listHTML}</div>`;
+          contentHTML = `<div class="place-scroll-box">${placesHTML}</div>`;
         } else {
-          placesHTML = `
-            <div style="text-align:center; padding:16px; color:#8e8e93; font-size:13px;">
-              찜한 장소가 없습니다.
+          contentHTML = `
+            <div class="empty-voucher" onclick="openAddPlaceModal(${item.day})">
+              + [${travelInfo.currentMember}] 님의 저장된 장소가 없습니다.<br>터치하여 장소를 추가해보세요.
             </div>
           `;
         }
 
-        const actionButtonsHTML = isOpen ? `
-          <button class="btn-text-action" onclick="openAddPlaceModal(event, ${item.day})">추가</button>
-          <button class="btn-text-action" onclick="openEditPlaceModal(event, ${item.day})">편집</button>
-        ` : '';
-
         card.innerHTML = `
-          <div class="day-header" onclick="toggleSavedDay(event, ${item.day})">
+          <div class="day-header" onclick="toggleSavedDay(${item.day})">
             <div class="day-title-box">
-              <span>Day ${item.day}</span>
+              <span>${item.title}</span>
               ${dateStr ? `<span class="day-date-text">${dateStr}</span>` : ''}
             </div>
-            <div class="header-right-group">
-              ${actionButtonsHTML}
-              <span class="icon">▼</span>
-            </div>
+            <span class="icon">▼</span>
           </div>
           <div class="day-content">
-            ${placesHTML}
+            ${contentHTML}
+            <div class="day-footer">
+              <div class="action-group">
+                ${(placesList.length > 0) ? `<button class="btn-link btn-edit-link" onclick="openEditPlaceModal(${item.day})">편집</button>` : ''}
+                <button class="btn-link" onclick="openAddPlaceModal(${item.day})">+ 장소 추가</button>
+              </div>
+            </div>
           </div>
         `;
 
@@ -2359,22 +3860,7 @@
       });
     }
 
-    function toggleSavedDay(event, day) {
-      if (event.target.classList.contains('btn-text-action')) return;
-      currentSavedOpenDay = (currentSavedOpenDay === day) ? null : day;
-      renderSavedPlaces();
-    }
-
-    function openMapView(name, url) {
-      if (url && url.startsWith('http')) {
-        window.open(url, '_blank');
-      } else {
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`, '_blank');
-      }
-    }
-
-    function openAddPlaceModal(event, day) {
-      if (event) event.stopPropagation();
+    function openAddPlaceModal(day) {
       editingDay = day;
       document.getElementById('inputPlaceName').value = '';
       document.getElementById('inputPlaceUrl').value = '';
@@ -2387,18 +3873,22 @@
 
     function saveNewPlace() {
       const name = document.getElementById('inputPlaceName').value.trim();
-      const url = document.getElementById('inputPlaceUrl').value.trim();
+      let url = document.getElementById('inputPlaceUrl').value.trim();
 
       if (!name) {
-        alert('장소 이름을 입력해주세요.');
+        alert('장소 이름을 입력해 주세요.');
         return;
       }
 
-      const m = travelInfo.currentMember;
-      if (!savedPlaces[m]) savedPlaces[m] = {};
-      if (!savedPlaces[m][editingDay]) savedPlaces[m][editingDay] = [];
+      if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
 
-      savedPlaces[m][editingDay].push({
+      const member = travelInfo.currentMember || '은섭';
+      if (!savedPlaces[member]) savedPlaces[member] = {};
+      if (!savedPlaces[member][editingDay]) savedPlaces[member][editingDay] = [];
+
+      savedPlaces[member][editingDay].push({
         id: Date.now(),
         name: name,
         url: url
@@ -2406,602 +3896,68 @@
 
       saveData();
       renderSavedPlaces();
+      renderHomeTab();
       closeAddPlaceModal();
     }
 
-    function openEditPlaceModal(event, day) {
-      if (event) event.stopPropagation();
+    function openEditPlaceModal(day) {
       editingDay = day;
-      renderEditPlaceList();
+      renderPlaceListModal();
       openModalWithHistory('editPlaceModal');
-    }
-
-    function renderEditPlaceList() {
-      const m = travelInfo.currentMember;
-      const places = (savedPlaces[m] && savedPlaces[m][editingDay]) ? savedPlaces[m][editingDay] : [];
-      const container = document.getElementById('placeListContainer');
-      container.innerHTML = '';
-
-      if (places.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">등록된 장소가 없습니다.</div>`;
-        return;
-      }
-
-      places.forEach((p, idx) => {
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <span class="list-item-title">${idx + 1}. ${p.name}</span>
-          <button class="btn-item-del" onclick="deletePlace(${p.id})">지우기</button>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function deletePlace(placeId) {
-      const m = travelInfo.currentMember;
-      if (savedPlaces[m] && savedPlaces[m][editingDay]) {
-        savedPlaces[m][editingDay] = savedPlaces[m][editingDay].filter(p => p.id !== placeId);
-        saveData();
-        renderEditPlaceList();
-        renderSavedPlaces();
-      }
     }
 
     function closeEditPlaceModal() {
       closeModalWithHistory('editPlaceModal');
     }
 
-    function openChatModalForCurrentSlide(day) {
-      const slider = document.getElementById(`slider-${day}`);
-      const schedule = getScheduleForMember();
-      const dayData = schedule.find(d => d.day === day);
-      if (!dayData || !dayData.vouchers || dayData.vouchers.length === 0) return;
-
-      let voucherIndex = 0;
-      if (slider && slider.clientWidth > 0) {
-        voucherIndex = Math.round(slider.scrollLeft / slider.clientWidth);
-      }
-      
-      const targetVoucher = dayData.vouchers[voucherIndex] || dayData.vouchers[0];
-      openChatModal(day, targetVoucher.id);
-    }
-
-    function scrollVoucher(day, direction) {
-      const slider = document.getElementById(`slider-${day}`);
-      if (!slider) return;
-      const cardWidth = slider.clientWidth;
-      slider.scrollBy({ left: direction === 'next' ? cardWidth : -cardWidth, behavior: 'smooth' });
-    }
-
-    function toggleDay(day) {
-      currentOpenDay = (currentOpenDay === day) ? null : day;
-      render();
-    }
-
-    // 바우처 추가 모달 관련 함수
-    function openAddModal(day) {
-      editingDay = day;
-      document.getElementById('inputTitle').value = '';
-      document.getElementById('inputFile').value = '';
-      openModalWithHistory('addModal');
-    }
-
-    function closeAddModal() {
-      closeModalWithHistory('addModal');
-    }
-
-    async function saveNewVoucher() {
-      const title = document.getElementById('inputTitle').value.trim();
-      const fileInput = document.getElementById('inputFile');
-      const saveBtn = document.getElementById('btnSaveVoucher');
-
-      if (!title) {
-        alert('바우처 제목을 입력해주세요.');
-        return;
-      }
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert('바우처 이미지 파일을 선택해주세요.');
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const formData = new FormData();
-      formData.append('image', file);
-
-      saveBtn.innerText = '업로드 중...';
-      saveBtn.disabled = true;
-
-      try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-          method: 'POST',
-          body: formData
-        });
-        const result = await response.json();
-
-        if (result && result.success) {
-          const imageUrl = result.data.url;
-          const m = travelInfo.currentMember;
-          const schedule = getScheduleForMember();
-          const targetDay = schedule.find(d => d.day === editingDay);
-
-          if (targetDay) {
-            if (!targetDay.vouchers) targetDay.vouchers = [];
-            targetDay.vouchers.push({
-              id: Date.now(),
-              title: title,
-              image: imageUrl,
-              comments: []
-            });
-
-            saveData();
-            render();
-            closeAddModal();
-          }
-        } else {
-          alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
-        }
-      } catch (e) {
-        console.error('바우처 업로드 오류:', e);
-        alert('업로드 중 오류가 발생했습니다.');
-      } finally {
-        saveBtn.innerText = '저장';
-        saveBtn.disabled = false;
-      }
-    }
-
-    // 바우처 관리 및 삭제 관련 함수들
-    function openListManageModal(day) {
-      editingDay = day;
-      renderVoucherListContainer();
-      openModalWithHistory('listManageModal');
-    }
-
-    function closeListManageModal() {
-      closeModalWithHistory('listManageModal');
-    }
-
-    function renderVoucherListContainer() {
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === editingDay);
-      const container = document.getElementById('voucherListContainer');
+    function renderPlaceListModal() {
+      const member = travelInfo.currentMember || '은섭';
+      const placesList = (savedPlaces[member] && savedPlaces[member][editingDay]) || [];
+      const container = document.getElementById('placeListContainer');
       container.innerHTML = '';
 
-      if (!targetDay || !targetDay.vouchers || targetDay.vouchers.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; color:#8e8e93; font-size:14px;">등록된 바우처가 없습니다.</div>`;
+      if (placesList.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:#8e8e93; text-align:center; padding:20px 0;">저장된 장소가 없습니다.</div>';
         return;
       }
 
-      targetDay.vouchers.forEach((v) => {
+      placesList.forEach(p => {
         const item = document.createElement('div');
         item.className = 'list-item';
         item.innerHTML = `
           <div class="list-item-info">
-            <img class="list-item-thumb" src="${v.image}" alt="thumb">
-            <span class="list-item-title">${v.title}</span>
+            <span class="list-item-title">${escapeHtml(p.name)}</span>
           </div>
-          <button class="btn-item-del" onclick="deleteVoucherItem(${v.id})">삭제</button>
+          <button class="btn-item-del" onclick="deletePlace(${p.id})">삭제</button>
         `;
         container.appendChild(item);
       });
     }
 
-    function deleteVoucherItem(voucherId) {
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === editingDay);
-      if (targetDay && targetDay.vouchers) {
-        targetDay.vouchers = targetDay.vouchers.filter(v => v.id !== voucherId);
+    function deletePlace(placeId) {
+      const member = travelInfo.currentMember || '은섭';
+      if (savedPlaces[member] && savedPlaces[member][editingDay]) {
+        savedPlaces[member][editingDay] = savedPlaces[member][editingDay].filter(p => p.id !== placeId);
         saveData();
-        renderVoucherListContainer();
-        render();
-        if (targetDay.vouchers.length === 0) {
-          closeListManageModal();
-        }
+        renderPlaceListModal();
+        renderSavedPlaces();
+        renderHomeTab();
       }
     }
 
-    function deleteAllVouchers() {
-      if (confirm('정말 이 Day의 모든 바우처를 삭제하시겠습니까?')) {
-        const schedule = getScheduleForMember();
-        const targetDay = schedule.find(d => d.day === editingDay);
-        if (targetDay) {
-          targetDay.vouchers = [];
-          saveData();
-          render();
-          closeListManageModal();
-        }
-      }
-    }
-
-    // 이미지 확대 모달 함수
-    function openViewModal(day, voucherId) {
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === day);
-      if (!targetDay) return;
-      const voucher = targetDay.vouchers.find(v => v.id === voucherId);
-      if (!voucher) return;
-
-      document.getElementById('viewModalTitle').innerText = voucher.title;
-      document.getElementById('viewModalImg').src = voucher.image;
-      openModalWithHistory('viewModal');
-    }
-
-    function closeViewModal(event) {
-      if (event.target.id === 'viewModal') {
-        closeModalWithHistory('viewModal');
-      }
-    }
-
-    function forceCloseViewModal() {
-      closeModalWithHistory('viewModal');
-    }
-
-    // 채팅 댓글 모달 관련 함수
-    function openChatModal(day, voucherId) {
-      editingDay = day;
-      activeVoucherId = voucherId;
-      renderChatMessages();
-      openModalWithHistory('chatModal');
-    }
-
-    function closeChatModal() {
-      closeModalWithHistory('chatModal');
-      activeVoucherId = null;
-    }
-
-    function renderChatMessages() {
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === editingDay);
-      if (!targetDay) return;
-      const voucher = targetDay.vouchers.find(v => v.id === activeVoucherId);
-      if (!voucher) return;
-
-      document.getElementById('chatModalHeader').innerText = voucher.title;
-      document.getElementById('chatModalSubHeader').innerText = `Day ${editingDay} 바우처 댓글 및 메모`;
-
-      const container = document.getElementById('chatContainer');
-      container.innerHTML = '';
-
-      if (!voucher.comments || voucher.comments.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:30px; color:#8e8e93; font-size:14px;">작성된 댓글이나 메모가 없습니다.</div>`;
-        return;
-      }
-
-      voucher.comments.forEach((c) => {
-        const bubble = document.createElement('div');
-        bubble.className = `chat-bubble ${c.isHighlighted ? 'highlighted' : ''}`;
-        
-        const pinClass = c.isHighlighted ? 'active' : '';
-        const pinText = c.isHighlighted ? '★ 강조됨' : '☆ 강조';
-
-        bubble.innerHTML = `
-          <div>${c.text}</div>
-          <div class="chat-meta">
-            <span>${c.author || '익명'}</span>
-            <div class="chat-actions">
-              <button class="btn-pin ${pinClass}" onclick="toggleHighlightComment(${c.id})">${pinText}</button>
-              <button class="btn-comment-del" onclick="deleteComment(${c.id})">삭제</button>
-            </div>
-          </div>
-        `;
-        container.appendChild(bubble);
-      });
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function sendComment() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === editingDay);
-      if (!targetDay) return;
-      const voucher = targetDay.vouchers.find(v => v.id === activeVoucherId);
-      if (!voucher) return;
-
-      if (!voucher.comments) voucher.comments = [];
-      voucher.comments.push({
-        id: Date.now(),
-        text: text,
-        author: travelInfo.currentMember,
-        isHighlighted: false
-      });
-
-      input.value = '';
-      saveData();
-      renderChatMessages();
-      render();
-    }
-
-    function handleChatKeyPress(e) {
-      if (e.key === 'Enter') {
-        sendComment();
-      }
-    }
-
-    function toggleHighlightComment(commentId) {
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === editingDay);
-      if (!targetDay) return;
-      const voucher = targetDay.vouchers.find(v => v.id === activeVoucherId);
-      if (!voucher) return;
-
-      voucher.comments.forEach(c => {
-        if (c.id === commentId) {
-          c.isHighlighted = !c.isHighlighted;
-        } else if (c.isHighlighted) {
-          c.isHighlighted = false;
-        }
-      });
-
-      saveData();
-      renderChatMessages();
-      render();
-    }
-
-    function deleteComment(commentId) {
-      const schedule = getScheduleForMember();
-      const targetDay = schedule.find(d => d.day === editingDay);
-      if (!targetDay) return;
-      const voucher = targetDay.vouchers.find(v => v.id === activeVoucherId);
-      if (!voucher) return;
-
-      voucher.comments = voucher.comments.filter(c => c.id !== commentId);
-
-      saveData();
-      renderChatMessages();
-      render();
-    }
-
-    function openHeaderEditModal() {
-      document.getElementById('editT1').value = travelInfo.t1;
-      document.getElementById('editMembers').value = travelInfo.members.join(', ');
-
-      tempStartDate = parseValidDate(travelInfo.startDate, new Date());
-      tempEndDate = parseValidDate(travelInfo.endDate, tempStartDate);
-
-      if (tempStartDate) {
-        pickerCalYear = tempStartDate.getFullYear();
-        pickerCalMonth = tempStartDate.getMonth();
-      }
-
-      const curSchedule = getScheduleForMember();
-      tempScheduleOrder = JSON.parse(JSON.stringify(curSchedule));
-
-      renderCalendar();
-      renderReorderList();
-      setupDragAndDrop();
-      openModalWithHistory('headerEditModal');
-    }
-
-    function closeHeaderEditModal() {
-      closeModalWithHistory('headerEditModal');
-    }
-
-    let pickerCalYear = 2026;
-    let pickerCalMonth = 11;
-    let tempStartDate = new Date(2026, 11, 12);
-    let tempEndDate = new Date(2026, 11, 16);
-    let tempScheduleOrder = [];
-
-    function renderCalendar() {
-      const titleEl = document.getElementById('calMonthTitle');
-      titleEl.innerText = `${pickerCalYear}년 ${pickerCalMonth + 1}월`;
-
-      const gridEl = document.getElementById('calGrid');
-      gridEl.innerHTML = '';
-
-      ['일', '월', '화', '수', '목', '금', '토'].forEach(d => {
-        const label = document.createElement('div');
-        label.className = 'cal-day-label';
-        label.innerText = d;
-        gridEl.appendChild(label);
-      });
-
-      const firstDayIndex = new Date(pickerCalYear, pickerCalMonth, 1).getDay();
-      const lastDayDate = new Date(pickerCalYear, pickerCalMonth + 1, 0).getDate();
-
-      for (let i = 0; i < firstDayIndex; i++) {
-        const emptyDiv = document.createElement('div');
-        gridEl.appendChild(emptyDiv);
-      }
-
-      for (let day = 1; day <= lastDayDate; day++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'cal-day';
-        dayDiv.innerText = day;
-        const currentDate = new Date(pickerCalYear, pickerCalMonth, day);
-
-        if (tempStartDate && tempEndDate) {
-          if (currentDate.getTime() === tempStartDate.getTime()) dayDiv.classList.add('selected-start');
-          else if (currentDate.getTime() === tempEndDate.getTime()) dayDiv.classList.add('selected-end');
-          else if (currentDate > tempStartDate && currentDate < tempEndDate) dayDiv.classList.add('in-range');
-        } else if (tempStartDate && currentDate.getTime() === tempStartDate.getTime()) {
-          dayDiv.classList.add('selected-start');
-        }
-
-        dayDiv.onclick = () => handleDateClick(currentDate);
-        gridEl.appendChild(dayDiv);
-      }
-
-      updateDateDisplayBtn();
-    }
-
-    function changeCalMonth(dir) {
-      pickerCalMonth += dir;
-      if (pickerCalMonth > 11) {
-        pickerCalMonth = 0;
-        pickerCalYear++;
-      } else if (pickerCalMonth < 0) {
-        pickerCalMonth = 11;
-        pickerCalYear--;
-      }
-      renderCalendar();
-    }
-
-    function handleDateClick(date) {
-      if (!tempStartDate || (tempStartDate && tempEndDate)) {
-        tempStartDate = date;
-        tempEndDate = null;
-      } else if (tempStartDate && !tempEndDate) {
-        if (date < tempStartDate) {
-          tempStartDate = date;
-        } else {
-          tempEndDate = date;
-        }
-      }
-      renderCalendar();
-    }
-
-    function updateDateDisplayBtn() {
-      const btn = document.getElementById('dateRangeDisplay');
-      btn.innerText = formatT2Text(tempStartDate, tempEndDate);
-    }
-
-    function renderReorderList() {
-      const container = document.getElementById('reorderListBox');
-      container.innerHTML = '';
-
-      if (tempScheduleOrder.length === 0) {
-        container.innerHTML = `<div style="font-size:11px; color:#8e8e93; text-align:center; padding:8px;">등록된 Day가 없습니다.</div>`;
-        return;
-      }
-
-      tempScheduleOrder.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'reorder-item';
-        div.dataset.index = index;
-
-        const voucherCount = item.vouchers ? item.vouchers.length : 0;
-        const badgeHTML = voucherCount > 0 ? `<span class="reorder-item-badge">바우처 ${voucherCount}개</span>` : '';
-
-        div.innerHTML = `
-          <div class="reorder-item-title">
-            <span>Day ${index + 1} (${item.title})</span>
-            ${badgeHTML}
-          </div>
-          <div class="drag-handle">☰</div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function setupDragAndDrop() {
-      const container = document.getElementById('reorderListBox');
-      let draggingItem = null;
-
-      container.addEventListener('pointerdown', (e) => {
-        const handle = e.target.closest('.drag-handle');
-        if (!handle) return;
-        
-        draggingItem = e.target.closest('.reorder-item');
-        if (!draggingItem) return;
-
-        draggingItem.classList.add('dragging');
-        draggingItem.setPointerCapture(e.pointerId);
-      });
-
-      container.addEventListener('pointermove', (e) => {
-        if (!draggingItem) return;
-        e.preventDefault();
-
-        const afterElement = getDragAfterElement(container, e.clientY);
-        if (afterElement == null) {
-          container.appendChild(draggingItem);
-        } else {
-          container.insertBefore(draggingItem, afterElement);
-        }
-      });
-
-      const handleDragEnd = (e) => {
-        if (!draggingItem) return;
-        draggingItem.classList.remove('dragging');
-        draggingItem = null;
-
-        const items = Array.from(container.querySelectorAll('.reorder-item'));
-        const newOrder = [];
-        items.forEach((item, newIdx) => {
-          const oldIdx = parseInt(item.dataset.index);
-          const scheduleObj = tempScheduleOrder[oldIdx];
-          scheduleObj.day = newIdx + 1;
-          newOrder.push(scheduleObj);
-        });
-        tempScheduleOrder = newOrder;
-        renderReorderList();
-      };
-
-      container.addEventListener('pointerup', handleDragEnd);
-      container.addEventListener('pointercancel', handleDragEnd);
-    }
-
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.reorder-item:not(.dragging)')];
-
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    function saveHeaderInfo() {
-      const t1 = document.getElementById('editT1').value.trim();
-      const membersStr = document.getElementById('editMembers').value.trim();
-
-      if (!t1) {
-        alert('여행지를 입력해주세요.');
-        return;
-      }
-
-      const members = membersStr ? membersStr.split(',').map(m => m.trim()).filter(Boolean) : ['은섭'];
-      if (members.length === 0) members.push('은섭');
-
-      travelInfo.t1 = t1;
-      travelInfo.startDate = tempStartDate;
-      travelInfo.endDate = tempEndDate || tempStartDate;
-      travelInfo.t2 = formatT2Text(travelInfo.startDate, travelInfo.endDate);
-      travelInfo.members = members;
-
-      if (!members.includes(travelInfo.currentMember)) {
-        travelInfo.currentMember = members[0];
-      }
-
-      const validStart = parseValidDate(travelInfo.startDate);
-      const validEnd = parseValidDate(travelInfo.endDate, validStart);
-      const dayDiff = Math.max(1, Math.round((validEnd - validStart) / (1000 * 60 * 60 * 24)) + 1);
-
-      travelInfo.members.forEach(m => {
-        if (!userSchedules[m]) userSchedules[m] = [];
-        const currentDays = userSchedules[m];
-
-        if (currentDays.length !== dayDiff || tempScheduleOrder.length === dayDiff) {
-          userSchedules[m] = tempScheduleOrder.map((item, idx) => ({
-            ...item,
-            day: idx + 1,
-            title: `Day ${idx + 1}`
-          }));
-        }
-      });
-
-      saveData();
+    /* -------------------------------------------------------------------------- */
+    /*                              앱 초기화 시작                               */
+    /* -------------------------------------------------------------------------- */
+
+    window.onload = function() {
+      loadData();
       renderHeader();
+      renderHomeTab();
       render();
       renderSavedPlaces();
-      closeHeaderEditModal();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      loadData();
       fetchExchangeRate();
-      renderHeader();
-      render();
       syncWithFirebase();
-    });
+    };
   </script>
 </body>
 </html>
