@@ -116,18 +116,27 @@
       flex-wrap: wrap;
     }
     .member-tag {
-      font-size: 14px;
+      font-size: 13px;
       color: #8e8e93;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 600;
       transition: all 0.2s;
+      padding: 6px 12px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.65);
     }
     .member-tag.active {
-      color: #1d1d1f;
+      color: #007aff;
       font-weight: 700;
-      font-size: 15px;
-      border-bottom: 2px solid #007aff;
-      padding-bottom: 2px;
+      font-size: 13px;
+      border: 1px solid rgba(0, 122, 255, 0.2);
+      background: #eef3fc;
+      padding-bottom: 6px;
     }
 
     .btn-header-edit {
@@ -319,12 +328,20 @@
     .clickable-purpose {
       cursor: pointer;
       color: #007aff;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      transition: opacity 0.2s;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 122, 255, 0.16);
+      background: #eef3fc;
+      font-size: 13px;
+      font-weight: 700;
     }
     .clickable-purpose:hover {
-      opacity: 0.7;
+      opacity: 0.85;
     }
 
     .btn-detail-link {
@@ -1354,7 +1371,15 @@
       background: rgba(255, 255, 255, 0.08);
     }
 
-    body.dark-mode .member-tag.active { color: #f5f5f7; }
+    body.dark-mode .member-tag {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    body.dark-mode .member-tag.active {
+      color: #4dabff;
+      background: rgba(10, 132, 255, 0.18);
+      border-color: rgba(10, 132, 255, 0.35);
+    }
 
     body.dark-mode .btn-header-edit {
       background: rgba(255, 255, 255, 0.12);
@@ -3317,6 +3342,46 @@
       closeModalWithHistory('addModal');
     }
 
+    // 바우처 이미지만 업로드 전에 적당한 크기로 최적화합니다.
+    // 기존 ImgBB 업로드/저장 구조는 그대로 유지하고, 업로드할 파일만 가볍게 만듭니다.
+    function compressVoucherImage(file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) {
+          reject(new Error('지원하지 않는 이미지 파일입니다.'));
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, maxWidth / img.width, maxHeight / img.height);
+            const width = Math.max(1, Math.round(img.width * scale));
+            const height = Math.max(1, Math.round(img.height * scale));
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              reject(new Error('이미지 변환을 준비하지 못했습니다.'));
+              return;
+            }
+
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error('이미지 최적화에 실패했습니다.'));
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = () => reject(new Error('이미지 파일을 읽을 수 없습니다.'));
+          img.src = event.target.result;
+        };
+        reader.onerror = () => reject(new Error('이미지 파일을 읽을 수 없습니다.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
     async function saveNewVoucher() {
       const titleInput = document.getElementById('inputTitle');
       const fileInput = document.getElementById('inputFile');
@@ -3339,8 +3404,10 @@
       saveBtn.innerText = '업로드 중...';
 
       try {
+        // 원본 코드는 유지하고, 업로드 직전에 이미지만 최적화합니다.
+        const uploadFile = await compressVoucherImage(file);
         const formData = new FormData();
-        formData.append('image', file);
+        formData.append('image', uploadFile, 'voucher.jpg');
 
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
           method: 'POST',
