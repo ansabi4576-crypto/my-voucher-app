@@ -3342,12 +3342,13 @@
       closeModalWithHistory('addModal');
     }
 
-    // 바우처 이미지만 업로드 전에 적당한 크기로 최적화합니다.
-    // 기존 ImgBB 업로드/저장 구조는 그대로 유지하고, 업로드할 파일만 가볍게 만듭니다.
-    function compressVoucherImage(file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) {
+    // ImgBB는 이미지 파일을 직접 받을 수 있으므로, 일반적인 휴대폰 사진은
+    // 불필요한 Canvas 변환을 하지 않고 원본 파일을 그대로 업로드합니다.
+    // 32MB를 초과하는 경우에만 브라우저에서 압축을 한 번 시도합니다.
+    function compressVoucherImage(file, maxWidth = 1600, maxHeight = 1600, quality = 0.82) {
       return new Promise((resolve, reject) => {
-        if (!file || !file.type.startsWith('image/')) {
-          reject(new Error('지원하지 않는 이미지 파일입니다.'));
+        if (!file) {
+          reject(new Error('이미지 파일이 없습니다.'));
           return;
         }
 
@@ -3355,31 +3356,104 @@
         reader.onload = (event) => {
           const img = new Image();
           img.onload = () => {
-            const scale = Math.min(1, maxWidth / img.width, maxHeight / img.height);
-            const width = Math.max(1, Math.round(img.width * scale));
-            const height = Math.max(1, Math.round(img.height * scale));
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
+            try {
+              const scale = Math.min(1, maxWidth / img.width, maxHeight / img.height);
+              const width = Math.max(1, Math.round(img.width * scale));
+              const height = Math.max(1, Math.round(img.height * scale));
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
 
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-              reject(new Error('이미지 변환을 준비하지 못했습니다.'));
-              return;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                reject(new Error('이미지 변환을 준비하지 못했습니다.'));
+                return;
+              }
+
+              ctx.drawImage(img, 0, 0, width, height);
+              canvas.toBlob((blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error('이미지 압축에 실패했습니다.'));
+              }, 'image/jpeg', quality);
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error('이미지 변환에 실패했습니다.'));
             }
-
-            ctx.drawImage(img, 0, 0, width, height);
-            canvas.toBlob((blob) => {
-              if (blob) resolve(blob);
-              else reject(new Error('이미지 최적화에 실패했습니다.'));
-            }, 'image/jpeg', quality);
           };
-          img.onerror = () => reject(new Error('이미지 파일을 읽을 수 없습니다.'));
+          img.onerror = () => reject(new Error('이 이미지 형식은 브라우저에서 변환할 수 없습니다.'));
           img.src = event.target.result;
         };
         reader.onerror = () => reject(new Error('이미지 파일을 읽을 수 없습니다.'));
         reader.readAsDataURL(file);
       });
+    }
+
+    async function prepareVoucherUploadFile(file) {
+      const maxBytes = 32 * 1024 * 1024;
+
+      // ImgBB 한도보다 충분히 작으면 원본을 그대로 사용합니다.
+      // 이 경로를 기본값으로 사용해 휴대폰 사진 형식/Canvas 호환성 문제를 피합니다.
+      if (file.size <= 30 * 1024 * 1024) {
+        return file;
+      }
+
+      try {
+        const compressed = await compressVoucherImage(file);
+        if (compressed.size <= maxBytes) {
+          return new File([compressed], 'voucher.jpg', { type: 'image/jpeg' });
+        }
+      } catch (error) {
+        console.warn('자동 압축 실패. 원본 용량을 확인합니다.', error);
+      }
+
+      throw new Error('이미지가 너무 큽니다. ImgBB 업로드 한도인 32MB 이하의 이미지를 선택해 주세요.');
+    }
+
+    async function uploadVoucherToImgBB(file) {
+      const uploadFile = await prepareVoucherUploadFile(file);
+      const formData = new FormData();
+      formData.append('image', uploadFile, uploadFile.name || file.name || 'voucher');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      try {
+        let res;
+        try {
+          res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+          });
+        } catch (error) {
+          if (error && error.name === 'AbortError') {
+            throw new Error('ImgBB 서버 응답이 30초를 초과했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.');
+          }
+          throw new Error('ImgBB 서버에 연결하지 못했습니다. 휴대폰의 인터넷 연결이나 브라우저 네트워크 차단 여부를 확인해 주세요.');
+        }
+
+        const rawText = await res.text();
+        let data = null;
+        try {
+          data = rawText ? JSON.parse(rawText) : null;
+        } catch (parseError) {
+          console.error('ImgBB 비정상 응답:', rawText);
+          throw new Error(`ImgBB가 정상적인 JSON 응답을 보내지 않았습니다. (HTTP ${res.status})`);
+        }
+
+        if (!res.ok) {
+          const serverMessage = data?.error?.message || data?.error?.code || `HTTP ${res.status}`;
+          throw new Error(`ImgBB 업로드 실패: ${serverMessage}`);
+        }
+
+        if (!data?.success || !data?.data?.url) {
+          const serverMessage = data?.error?.message || data?.error?.code || '업로드 결과 URL을 받지 못했습니다.';
+          throw new Error(`ImgBB 업로드 실패: ${serverMessage}`);
+        }
+
+        return data.data.url;
+      } finally {
+        clearTimeout(timeoutId);
+      }
     }
 
     async function saveNewVoucher() {
@@ -3404,45 +3478,30 @@
       saveBtn.innerText = '업로드 중...';
 
       try {
-        // 원본 코드는 유지하고, 업로드 직전에 이미지만 최적화합니다.
-        const uploadFile = await compressVoucherImage(file);
-        const formData = new FormData();
-        formData.append('image', uploadFile, 'voucher.jpg');
+        const imgUrl = await uploadVoucherToImgBB(file);
+        const member = travelInfo.currentMember || '은섭';
+        const dayIdx = editingDay - 1;
 
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-          method: 'POST',
-          body: formData
+        if (!userSchedules[member]) userSchedules[member] = [];
+        if (!userSchedules[member][dayIdx]) userSchedules[member][dayIdx] = { dayNum: editingDay, vouchers: [] };
+        if (!userSchedules[member][dayIdx].vouchers) userSchedules[member][dayIdx].vouchers = [];
+
+        userSchedules[member][dayIdx].vouchers.push({
+          id: 'v_' + Date.now(),
+          title: title,
+          imgUrl: imgUrl,
+          comments: []
         });
 
-        const data = await res.json();
-        if (data && data.success) {
-          const imgUrl = data.data.url;
-          const member = travelInfo.currentMember || '은섭';
-          const dayIdx = editingDay - 1;
-
-          if (!userSchedules[member]) userSchedules[member] = [];
-          if (!userSchedules[member][dayIdx]) userSchedules[member][dayIdx] = { dayNum: editingDay, vouchers: [] };
-          if (!userSchedules[member][dayIdx].vouchers) userSchedules[member][dayIdx].vouchers = [];
-
-          userSchedules[member][dayIdx].vouchers.push({
-            id: 'v_' + Date.now(),
-            title: title,
-            imgUrl: imgUrl,
-            comments: []
-          });
-
-          saveData();
-          titleInput.value = '';
-          fileInput.value = '';
-          closeModalWithHistory('addModal');
-          render();
-          renderHomeTab();
-        } else {
-          alert('이미지 업로드 실패: ' + (data.error?.message || '다시 시도해 주세요.'));
-        }
+        saveData();
+        titleInput.value = '';
+        fileInput.value = '';
+        closeModalWithHistory('addModal');
+        render();
+        renderHomeTab();
       } catch (e) {
-        console.error('업로드 예외:', e);
-        alert('이미지 업로드 중 오류가 발생했습니다.');
+        console.error('ImgBB 업로드 오류:', e);
+        alert(e instanceof Error ? e.message : '이미지 업로드 중 오류가 발생했습니다.');
       } finally {
         saveBtn.disabled = false;
         saveBtn.innerText = '저장';
